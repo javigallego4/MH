@@ -181,7 +181,12 @@ def mute(w,j, sigma = 0.3):
     targets -- targets values
 
     """
-def localSearch(ini_weight,features,targets, max_iterations = 15000):
+def localSearch(ini_weight,features,targets, max_iterations = 15000, convergence = [], globalBest = 0):
+    if len(convergence) == 0:
+        return_convergence = False
+    else:
+        return_convergence = True
+
     n = features.shape[1]
     count = 0
     improve = False
@@ -227,5 +232,13 @@ def localSearch(ini_weight,features,targets, max_iterations = 15000):
             improve = False
             random.shuffle(index)
             
+        if(bestF > globalBest):
+            globalBest = bestF
+            
+        if return_convergence == True: convergence.append(globalBest)
 
-    return weights
+
+    print('Máximas evaluaciones: ', max_iterations)
+    print('Iteracion en la que se sale la LS', actual_iter)
+    if return_convergence == False: return weights
+    if return_convergence == True: return weights, convergence

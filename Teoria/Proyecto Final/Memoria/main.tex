@@ -496,7 +496,7 @@ Donde
 \section{Descripción de la aplicación de los algoritmos}
 
 \subsection{Esquemas de representación}
-\textcolor{ugrColor}{Antes de comenzar, comentar brevemente que aquellas secciones que no añaden nada nuevo (aquellas cogidas de la P1) las marco en rojo}. En nuestro problema, los datos de entrada poseen los elementos que siguen: 
+En nuestro problema, los datos de entrada poseen los elementos que siguen: 
 \begin{itemize}	
 	\item \textbf{Clase del elemento (target)}: que es la categoría a la que corresponde el mismo, dependiendo de cada dataset
 	\item \textbf{Ejemplo}: que es un par que tiene un vector de features y una clase (target).
@@ -518,8 +518,6 @@ Para la generación de las soluciones aleatorias usamos \textbf{np.random.unifor
 \State vector de pesos $\gets$ np.random.uniform(extremo inferior intervalo, extremo superior, longitud del vector)
 \EndProcedure
 \end{algorithmic}
-
-VERIFICAR ESTO. NO ES COMUN A TODOS PORQUE HAY ALGUNOS QUE NO LOS USAN .
 
 \subsubsection{\textcolor{ugrColor}{Mutación}}
 Este operador es común para todos los algoritmos de la práctica. Al mutar, sumaremos a la componente $j-esima$ un valor aleatorio y truncaremos al intervalo $[0,1]$ si el nuevo valor se nos escapara del intervalo:\\
@@ -559,234 +557,183 @@ Y calcularemos $T_{red}$ así:\\
 
 \section{Descripción de los algoritmos considerados}
 
-\subsection{\textcolor{ugrColor}{Algoritmo Greedy Relief}}
-El algoritmo de Greedy Relief se encarga de recorrer todo el conjunto de datos, muestra por muestra. En cada uno de ellos, dependiendo del amigo y enemigo más cercanos, hace una modificación del vector de pesos. Entonces, lo que haremos será: por cada una de las muestras, obtener un conjunto de datos amigos (que pertenecen a su misma clase) y uno de enemigos (no pertenecen a su misma clase). Posteriormente, obtendremos el vecino más cercano de cada uno de ellos. \\
+\subsection{Big Bang - Big Crunch}
 
-\begin{algorithm}
-\caption{Greedy Relief}\label{euclid}
-\begin{algorithmic}[1]
-\Procedure{greedyRelief}{features, targets}
-\State $w \gets [0, ...., 0]$
-\State distances $\gets$ matriz cuadrada de distancias (euclídeas)
-\BState \textbf{\emph{loop}:} para cada muestra del conjunto de entrenamiento
+El algoritmo Big Bang - Big Crunch, también conocido por la abreviatura BB-BC es fruto de la teoría de la evolución en física y astronomía. Este algoritmo está compuesto principalmente por dos fases: 
 
-\State en\_indices $\gets$ índices de ejemplos con distinto target a la muestra
+\begin{enumerate}
+\item \textbf{Big Bang:} esta fase engloba la creación de una población de soluciones iniciales aleatorios. Representa a su vez, un conjunto de procedimientos de disipación de energía en términos de aleatoriedad. 
+\item \textbf{Big Crunch:} consiste en la reducción de dicha población inicial a un conjunto de élite (también conocido como \textbf{\textit{elite pool}}, exhibido por un centro de masas. Representa a un proceso que distribuye partículas al azar y las reordena. 
+\end{enumerate}
 
-\State fr\_indices $\gets$ índices de ejemplos con igual target a la muestra
+El coste de una solución dada representará una masa. Entonces, es intuitivo, que aquella solución que tenga el menor coste, es decir la mejor, será el centro de masa. 
 
-\State friends $\gets$ features[fr\_indices]
-\State enemies $\gets$ features[en\_indices]
-\State
-\State closestFriend $\gets$ Amigo mas cercano
-\State closestEnemy $\gets$ Enemigo mas cercano
-\State
-\State w $\gets$ w + |features(i) - closestEnemy| - |features(i)-closestFriend|
-\BState \textbf{\emph{endloop}}
-\State w $\gets$ Truncamos valores negativos a 0
-\State w $\gets$ Normalizamos w
-\State \textbf{return} w
-\EndProcedure
-\end{algorithmic}
-\end{algorithm}
+Como sabemos por la física, la gravedad depende de la masa de los objetos y de la distancia que los separa. Cuanta más masa tienen y más cerca están, mayor es la fuerza. Cuando se separan el doble por ejemplo, la fuerza se reduce a un cuarto.
 
-\subsection{\textcolor{ugrColor}{Búsqueda local}}
-Para este algoritmo, debemos definir el algoritmo que hemos usado para obtener una mutación de un ejemplo. Al mutar, sumaremos a la componente $j-esima$ un valor aleatorio y truncaremos al intervalo $[0,1]$ si el nuevo valor se nos escapara del intervalo:
-\begin{algorithmic}[1]
-\Procedure{mute}{w,sigma,j}
-\State $w(j) \gets w(j) + random(0,1)$
-\State $w(j) \gets Normalize(w(j))$
-\State \textbf{return} w
-\EndProcedure
-\end{algorithmic}
-En el procedimiento de cálculo de pesos mediante la búsqueda local intervendrá la función de evaluación, que será notada por $f(w)$.
+En nuestro caso, el centro de masas atraerá soluciones potencialmente mejores. En otras palabras, aquellas más cercanas al centro del espacio de búsqueda (universo), o el punto donde el Big Crunch convergerá. 
 
-Así, el procedimiento general para la generación de pesos para la búsqueda local sería:
-
-
-\begin{algorithm}
-\caption{Local Search}\label{euclid}
-\begin{algorithmic}[1]
-\Procedure{localSearch}{initialWeight,features,targets}
-\State weight $\gets$ valor inicial para los pesos
-\State bestF $\gets$ valor inicial para la función objetivo
-\State index $\gets$ Ordenación de forma aleatoria de los índices
-\State improve $\gets$ False
-\BState \textbf{\emph{while}}  (menos evaluaciones que 15000) and (Haya mejora antes de generar 20*n vecinos) 
-
-\State w $\gets$ vector de pesos mutando componente j-esima
-
-\State newF $\gets$ Valor funcion objetivo para w
-\If {newF $>$ bestF}
-
-bestF $\gets$ newF
-
-weight $\gets$ w
-
-notMuted $\gets$ 0
-
-improve $\gets$ True
-
-\Else
-
-notMuted $\gets$ notMuted + 1
-
-\EndIf
-
-\State evaluaciones $\gets$ evaluaciones +1
-
-\If {(Hay mejora) or (Todos los componentes han sido ya mutados)}
-
-improve $\gets$ False
-
-index $\gets$ Ordenación de forma aleatoria de los índices
-
-\EndIf
-
-\BState \emph{endloop}
-\State \textbf{return} weight
-\EndProcedure
-\end{algorithmic}
-\end{algorithm}
+Tal y como podemos ver, presenta pues una gran similitud con los algoritmos genéticos, los cuales hemos estudiado a lo largo de la asignatura. Es por esto, que he elegido esta metaheurística, pues me permite realizar diversas comparaciones con los resultados ya obtenidos en las prácticas de la asignatura. 
 
 \pagebreak
-\subsection{Búsqueda Multiarranque Básica (BMB)}
+\begin{figure}[htp]
+\centering
+\includegraphics[scale=0.350]{Imagenes/pseudo.png}
+\label{}
+\end{figure}
 
-Es el algoritmo multiarranque más básico que podemos considerar. En él,  las soluciones iniciales se generan al azar, y la etapa de búsqueda se realiza
-mediante el algoritmo de Búsqueda Local. Siguiendo el pseudocódigo de los seminarios y teoría, se ha implementado una versión concisa aprovechando la búsqueda local implementada en las sesiones anteriores.
-\vspace{0.2cm}
+\textbf{Mencionar que como en los criterios de evaluación del proyecto se evalúa por separado la metaheurística y una mejora de esta añadiéndole Búsqueda Local o cualquier otra hibridación, vamos a obviar el PASO 4 para la primera parte. Este paso lo añadiremos para la mejora. }
+
+\subsubsection{Explicación de las partes del algoritmo}
+
+\textbf{Paso 1:} nuestro algoritmo comienza con la fase del Big Bang, donde generamos nuestras soluciones inciales. En esta primera generación, dichas soluciones se generarán de manera totalmente aleatorias. Por el contrario, para el resto de generaciones de soluciones iniciales, partiremos del conjunto de élite. Luego cada vez se generarán poblaciones mejores. 
+
+\begin{itemize}
+\item \textbf{Conjunto de élite}: este es uno de los términos que mayor importancia cobra en el algoritmo. Este conjunto almacena aquellas soluciones que sean mejores. Esto, nos permite realizar una mayor explotación de las soluciones.  
+\end{itemize}
+
+Puesto que para la segunda práctica, para los algoritmos genéticos usamos poblaciones con tamaño 30, vamos a mantener el mismo tamaño de tal manera que podamos realizar una comparación coherente entre los algoritmos ya realizados. 
+
+\textbf{Paso 2: } una vez realizada la fase del Big Bang, pasamos a la fase del Big Crunch. Lo primero que haremos en esta sección es que para cada solución actual generaremos $N_s$ vecinos, de tal manera que reemplazaremos al padre por el mejor descendiente $C_i$. 
+
+En el BB-BC original la generación de vecinos se rige por las siguientes dos fórmulas: 
+\begin{equation}
+C_i^{new} = C_c + \sigma
+\end{equation}
+\begin{equation}
+\sigma = \frac{r\alpha(C_{max} - C{min}}{k}, 0 < \frac{\alpha}{k} < 1
+\end{equation}
+
+donde $C_i^{new}$ es el vecino nuevo y $\sigma$ la desviación estándar de una distribución normal. 
+
+Para el cálculo de $\sigma$, $r$ es un nº aleatorio entre el 0 y 1. Así mismo, $\alpha$ es una tasa de reducción cuyo valor también estará comprendido en dicho intervalo. $C_{max} y C_{min}$ son los límites superior e inferior del conjunto de élite en un momento dado. Por último, $k$ es el nº máximo de evaluaciones. 
+
+En este paso es donde más adapto la metaheurística a nuestro problema. Como lo que queremos es modificar un vector de pesos, tenemos que darle otro sentido a la ecuación (1). Entonces, $\sigma$ significará para nosotros el porcentaje de pesos que vamos a mutar. De tal manera que, como mediante (2) se obtienen valores muy pequeños he procedido de la siguiente forma: 
+
+\begin{equation}
+\sigma = max\hspace{0.02cm}\{\hspace{0.02cm}C_{max} - C_{min}, 0.05\hspace{0.02cm}\}
+\end{equation}
+
+Sabemos que al principio el conjunto de élite tendrá soluciones con valores de masas más dispersos. Esto nos permite entonces, mutar una mayor cantidad de pesos al principio del algoritmo pues la diferencia entre $C_{max}$ y $C_{min}$ será bastante mayor que 0.05. Por el contrario, conforme avance la ejecución dicha diferencia irá reduciéndose. Cada vez se irán mutando menos pesos. Seguramente, llegue un punto en que sea muy pequeña, entonces nos aseguramos de que al menos se mutarán un 5\% de los pesos, de ahí que incluyamos el 0.05 en la ecuación (3). 
+
+\textbf{Paso 3: }Tras esto, buscaremos el centro de masas: 
+
+\begin{itemize}
+\item \textbf{Centro de masas:} en física, el centro de masas de un sistema discreto o continuo es el punto geométrico que dinámicamente se comporta como si en él estuviera aplicada la resultante de las fuerzas externas al sistema. De manera análoga, se puede decir que el sistema formado por toda la masa concentrada en el centro de masas es un sistema equivalente al original.
+\end{itemize}
+
+En nuestro caso, el centro de masas hara referencia a aquella solución que mayor masa tenga, o lo que es lo mismo, aquella solución que mejor valor tenga para nuestra función objetivo. 
+
+\textbf{Llegados a este punto es donde se aplicaría el paso 4 del algoritmo. Aplicaríamos una búsqueda local, con un determinado nº de evaluaciones máximas. Este paso solo se incluye en la hibridación con BL.}
+
+\textbf{Paso 5: } la siguiente tarea a realizar es la de actualizar el \textbf{elite pool}. Para ello, borramos el último elemento del array (nótese que dicho vector de Stellar Objects ha sido ordenado previamente de forma descendente, de mayor a menor, en función de los valores de las masas). Acto seguido, incluiríamos el nuevo centro de masa, y procederíamos a realizar una ordenación de nuevo. Así mismo, almacenaríamos los nuevos valores de $c_{max}$ y $c_{min}$. 
+
+\textbf{Paso 6: } una vez realizadas todas las operaciones necesarias para actualizar la elite pool, procederíamos a reducir el tamaño de la población actual. En cada iteración reducimos en 6 el tamaño actual. En caso de haber únicamente 6 individuos, nos quedaríamos directamente con el mejor, y saldríamos del bucle interno. 
+
+\textbf{Paso 7: } una vez fuera, en caso de no cumplirse la condición de parada, volveríamos al PASO 1 del algoritmo, donde se generaría una nueva población inicial a partir del conjunto de élite actual resultante. Este proceso se repetirá hasta que se llegue al número de evaluaciones máximas permitidas, que es nuestro criterio de parada. 
+
+A continuación presentamos el pseudocódigo de una manera mucho más extensa y cercana al código. En primer lugar, incluyo el pseudocódigo de la función \textbf{neighbours}. Mediante este método generaamos todos los vecinos para cada solución de la población actual. Posteriormente, retornamos aquel vecino cuyo valor de masa sea el más alto. 
+
+\vspace{1cm}
 
 \begin{algorithm}
-\caption{BMB}\label{euclid}
+\caption{neighbours}\label{euclid}
 \begin{algorithmic}[1]
-\Procedure{BMB}{data,classes, trainIndex, testIndex}
-\State ini\_weights $\gets$ generamos la solución inicial
-\State bestF $\gets$ f(ini\_weights)
-\State
-\BState \textbf{\emph{for i in}}
-(range(15)):
-\State w $\gets$ localSearch(ini\_weights, data, classes) \hspace{3cm}(15000 / 15 evaluaciones)
+\Procedure{neighbours}{st,data,classes, trainIndex, testIndex, cmax, cmin}
 
-\State currentF $\gets$ f(w)
-\State
-\If {currentF > bestF}
-\State weights $\gets$ np.copy(w)
-\State bestF $\gets$ currentF
-\EndIf
-\State
-\State ini\_weights $\gets$ generamos nueva solución aleatoria inicial
+\State \emph{for i in} range(NUM\_NEIGHBOURS): 
+\State \hspace{1cm}\emph{for i in} range(nº caracteristicas * m)
+\State \hspace{1.5cm} index $\gets$ nº aleatorio entre [0, nº características -1]
+\State \hspace{1.5cm}mute(st.w)
+\State \hspace{1cm}new\_st $\gets$ StellarObject(data[trainIndex], classes[trainIndex], st.w)
+\State \hspace{1cm}neighbours.append(new\_st)
 
-\BState \emph{endloop}
-\State Entrenamos el modelo, predecimos y calculamos las tasas
-\State \textbf{return} tasa clasificación, tasa reducción
+\State
+\State return vecino con mayor valor de masa
+
 \EndProcedure
 \end{algorithmic}
 \end{algorithm}
 
-\subsection{Enfriamiento Simulado}
+\vspace{1cm}
 
-Este algoritmo es bastante más complejo que el anterior. Empezamos comentando algunas particularidades. Para el cálculo de la temperatura inicial se sigue el siguiente esquema: $T_0 = 0.3 * f(inicial) / -ln(0.3)$. Donde $f(x)$ es nuestra función fitness. La temperatura inicial se calcula como el mínimo entre $10^{-3}$ y $T_0$, para que nunca sea la temperatura final mayor que la inicial.
-
-Por otro lado, existen varios criterios de parada. Para el bucle externo el criterio de parada es el número de evaluaciones de la función fitness y la temperatura actual. Mientras que en el bucle interno es el número de vecinos generados y el número de soluciones aceptadas (entre cada enfriamiento).
-
-Finalmente el criterio de enfriamiento es Cauchy modificado donde tenemos que $T_{i+1} = T_i / (1 + \beta * T_i)$, para $\beta = (T_0 - T_f) / (M * T_0 * T_f)$. M es el número de enfriamientos a realizar, es decir el número máximo de evaluaciones a la función fitness, entre el número de vecinos que se genera en cada bucle interno. 
+Ahora, vamos con el pseudocódigo de la función principal del algoritmo. Tal y como se comentó previamente, el paso 4 (incluir la búsqueda local no se incluye en esta versión inicial. Se incluirá en la hibridación explicada posteriormente. 
 
 \begin{algorithm}
-\caption{ES}\label{euclid}
+\caption{BBBC}\label{euclid}
 \begin{algorithmic}[1]
-\Procedure{ES}{data,classes, trainIndex, testIndex}
-\State weights $\gets$ generamos la solución inicial
-\State bestF, currentF $\gets$ f(weights)
-\State best\_weights $\gets$ weights.copy()
-\State
+\Procedure{BBBC}{data,classes, trainIndex, testIndex}
 
-\State max\_neighbours $\gets$ 10 * nº features
-\State max\_successes $\gets$ 0.1 * max\_neighbours
-\State M $\gets$ nº de enfriamientos a realizar
+\State population $\gets$ población inicial aleatoria
+\State sort(population)
+
+\State centre\_mass $\gets$ population[0]
+\State elite\_pool $\gets$ population[\hspace{0.1cm}:\hspace{0.1cm}ELITE\_POOL\_SIZE]
+\State $c_{max}, c_{min} \gets$ elite\_pool[0], elite\_pool[-1]
+
 \State
-\State $T_0 \gets$ $\frac{0.3\hspace{0.1cm}*\hspace{0.1cm}currentF}{- \log(0.3)}$
-\State $T_F \gets$ $10^{-3}$
-\State $\beta \gets \frac{T_0 - T_F}{M * T_0 * T_F}$ 
-\State $T_current \gets T_0$
-\State
+\State it $\gets$ 0 
 \BState \textbf{\emph{while}}
-max\_successes > 0 and $T_{current} > T_F$ and coolings < M
-\State neighbours, num\_successes $\gets$ 0
+it < MAX\_EVALUACIONES :
 
-\State \textbf{\emph{while}} num\_successes < max\_successes and negihbours < max\_neighbours
-
-\State \hspace{0.75cm}w $\gets$ weights.copy()
-\State \hspace{0.75cm}index $\gets$ componente aleatoria
-\State \hspace{0.75cm}w $\gets$ mute(w, index)
-\State \hspace{0.75cm}newF $\gets$ f(w)
-
-\State \hspace{0.75cm}$\Delta f$ $\gets$ newF - currentF
-
-\State
-\State \hspace{0.75cm}\textbf{if} diff > 0 or U(0,1) $\leq e^{\frac{\Delta f}{T_{current}}}$  \textbf{then}
-
-\State \hspace{1.25cm}currentF $\gets$ newF
-\State \hspace{1.25cm}num\_successes $\gets$ +1
-\State \hspace{1.25cm}weights $\gets$ w.copy()
-\State \hspace{1.25cm}\textbf{if} currentF > bestF \textbf{then} 
-
-\State \hspace{1.75cm}best\_weights $\gets$ weights
-\State \hspace{1.75cm}bestF $\gets$ currentF
-
-\State \hspace{1.25cm}neighbours $\gets$ +1
-
-\State \textbf{\emph{endloop}}
-
-\State $T_{current} = \frac{T_{current}}{1+\beta * T_{current}}$
-\State coolings $\gets$ +1
-
-\BState \emph{endloop}
-\State Entrenamos el modelo, predecimos y calculamos las tasas
-\State \textbf{return} tasa clasificación, tasa reducción
-\EndProcedure
-\end{algorithmic}
-\end{algorithm}
-
-\subsection{Búsqueda Local Iterativa}
-
-La ILS está basada en la aplicación repetida de la Búsqueda Local a una solución inicial que se obtiene por mutación de un óptimo local previamente encontrado. Siguiendo el pseudocódigo de los seminarios y teoría, se ha implementado una versión concisa aprovechando la búsqueda local implementada en las sesiones anteriores.
-\vspace{0.2cm}
-
-\begin{algorithm}
-\caption{ILS}\label{euclid}
-\begin{algorithmic}[1]
-\Procedure{ILS}{data,classes, trainIndex, testIndex}
-\State weights $\gets$ generamos la solución inicial
-\State bestF, currentF $\gets$ f(weights)
-\State best\_weigths $\gets$ weights.copy()
-\State mutations $\gets$ range(0.1 * nº features)
-\State
-\BState \textbf{\emph{for i in}}
-(range(15)):
-\State \hspace{0.5cm}\emph{for} i in mutations
-
+\State seguir $\gets$ true
+\State new\_tam $\gets$ 30
+\State \textbf{\emph{while}} seguir == True
 \State \hspace{1cm}index $\gets$ índice característica aleatoria
 
-\State \hspace{1cm}weigths $\gets$ mute(weights, index, 0.4)
-\State \hspace{0.5cm}\emph{endloop}
-\State \hspace{0.5cm}weights $\gets$ aplicamos búsqueda local
-\State \hspace{0.5cm}currentF $\gets$ f(weights)
+\State \hspace{1cm}\emph{Para cada elemento de la población}
 
-\State \hspace{0.5cm}\textbf{if} currentF > bestF  \textbf{then}
-\State \hspace{1cm}bestF $\gets$ currentF
-\State \hspace{1cm}best\_weights $\gets$ weights
+\State \hspace{1.5cm}neighbour $\gets$ neighbours(population[i], data, classes, trainIndex, testIndex, cmax, cmin)
+\State \hspace{1.5cm} new\_population.apppend(neighbour)
+
+\State \hspace{1cm}\emph{endloop}
+
 \State
-\State \hspace{0.5cm}weights $\gets$ best\_weights.copy()
-\BState \emph{endloop}
+\State \hspace{1cm}it $\gets$ += new\_tam * NUM\_NEIGHBOURS
+
+\State \hspace{1cm}sort(new\_population)
+\State \hspace{1cm}centre\_mass $\gets$ new\_population[0]
+\State
+\State \hspace{1cm}Actualizamos elite\_pool
+\State \hspace{1cm}sort(elite\_pool)
+\State \hspace{1cm}$c_{max}, c_{min} \gets$ elite\_pool[0].mass, elite\_pool[-1].mass
+\State \hspace{1cm}new\_population $\gets$ reducimos la poblacion
+
+\State \textbf{\emph{end while}}
+
+\State 
+\State \textbf{if} it < MAX\_EVALUACIONES  \textbf{then}
+\State \hspace{0.5cm} population $\gets$ generamos nueva población a partir del elite\_pool
+
+\BState{end while}
+
 \State Entrenamos el modelo, predecimos y calculamos las tasas
 \State \textbf{return} tasa clasificación, tasa reducción
 \EndProcedure
 \end{algorithmic}
 \end{algorithm}
 
-\subsection{Híbrido ILS - ES}
 
-\pagebreak
-\section{Procedimiento considerado para desarrollar la práctica}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\newpage
+\section{Procedimiento considerado para desarrollar el proyecto}
 Para desarrollar la práctica, he usado \textbf{Python} como lenguaje de programación, sin usar ningún framework de metaheurísticas.
 
 Para poder ejecutar el código , hace falta tener instalado \emph{Numpy, Scipy} y \emph{Sklearn}. Este último es muy útil para la realización de prácticas de este estilo pues trae implementaciones de muchas funcionalidades básicas para \emph{Machine learning}.
@@ -800,8 +747,13 @@ Tras la ejecución, comenzará a ejecutar los algoritmos sobre los 3 ficheros de
 La lista de archivos que contiene la práctica son los siguientes:
 \begin{itemize}
 	\item \textbf{main.py}: fichero principal a ejecutar para la ejecución de nuestro programa.	
-	\item \textbf{algorithms.py}: fichero en el que se encuentran los algoritmos de la P1, y algunas funciones auxiliares programadas para la práctica.
-\item \textbf{P3\_algorithms.py}: fichero con los algoritmos implementados en esta práctica. 
+	\item \textbf{algorithms.py}: fichero en el que se encuentran los algoritmos de la P1, y algunas funciones auxiliares programadas para las prácticas.
+
+\item \textbf{genetics.py}: fichero con los algoritmos genéticos implementados en las prácticas.
+\item \textbf{memetics.py}: fichero con los algoritmos meméticos implementados en las prácticas.
+
+\item \textcolor{ugrColor}{\textbf{bbbc.py}: fichero con la metaheurística Big Bang - Big Crunch, y su híbrido.}
+ 
 	\item \textbf{graficas.ipynb}: notebook mediante el cual he generado las gráficas.  
 	\item \textbf{Datasets}: carpeta en la que se encuentran los datasets almacenados.
 	\item \textbf{Archivos\_CSV}: carpeta con los archivos CSV necesarios para agilizar el proceso de creación de las gráficas.
@@ -812,153 +764,51 @@ La lista de archivos que contiene la práctica son los siguientes:
 
 \subsection{Resultados de cada algoritmo}
 
-\textbf{Algoritmo 1-NN}
+\textbf{Algoritmo Big Bang - Big Crunch}
 
 \begin{table}[ht!]
 \begin{tabular}{ccccc|cccc|cccc}
 \centering
  & \multicolumn{4}{c}{\textit{Ionosphere}} & \multicolumn{4}{c}{\textit{Parkinson}} & \multicolumn{4}{c}{\textit{Spectf-Heart}} \\ \hline
 \textbf{Nº} & \textbf{Clas} & \textbf{Red} & \textbf{Agr} & \textbf{T} & \textbf{Clas} & \textbf{Red} & \textbf{Agr} & \textbf{T} & \textbf{Clas} & \textbf{Red} & \textbf{Agr} & \textbf{T} \\ \hline
-0&	 0.85 & 0.00 & 0.42 & 0.00283 & 	0.72 & 0.00 & 0.36 & 0.00099 & 		0.97 & 0.00 & 0.49 & 0.00309 \\ 
-1&	 0.77 & 0.00 & 0.39 & 0.00276 & 	0.82 & 0.00 & 0.41 & 0.00100 & 		0.90 & 0.00 & 0.45 & 0.00323 \\ 
-2&	 0.83 & 0.00 & 0.41 & 0.00279 & 	0.95 & 0.00 & 0.47 & 0.00100 & 		0.71 & 0.00 & 0.36 & 0.00312 \\ 
-3&	 0.91 & 0.00 & 0.46 & 0.00278 & 	0.74 & 0.00 & 0.37 & 0.00100 & 		0.77 & 0.00 & 0.39 & 0.00317 \\ 
-4&	 0.86 & 0.00 & 0.43 & 0.00285 & 	0.67 & 0.00 & 0.33 & 0.00101 & 		0.99 & 0.00 & 0.49 & 0.00307 \\ 
+0&	 0.90 & 0.97 & 0.94 & 23.56071 & 	0.69 & 1.00 & 0.85 & 14.11411 & 0.94 & 0.86 & 0.90 & 21.43855 \\ 
+1&	 0.83 & 0.97 & 0.90 & 21.53296 & 	0.77 & 1.00 & 0.88 & 13.87712 & 0.84 & 0.91 & 0.88 & 21.63166 \\ 
+2&	 0.74 & 0.91 & 0.83 & 22.06799 & 	0.85 & 1.00 & 0.92 & 14.12460 & 0.76 & 0.89 & 0.82 & 23.87600 \\ 
+3&	 0.96 & 0.91 & 0.93 & 22.12468 & 	0.67 & 1.00 & 0.83 & 14.63036 & 0.83 & 0.80 & 0.81 & 22.49936 \\ 
+4&	 0.96 & 0.91 & 0.93 & 22.28493 & 	0.72 & 1.00 & 0.86 & 13.73606 & 0.97 & 0.84 & 0.91 & 22.39183 \\ 
 \hline
-Media&	 0.84 & 0.00 & 0.42 & 0.00280	& 0.78 & 0.00 & 0.39 & 0.00100	& 0.87 & 0.00 & 0.43 & 0.00314
- \\ Std&	 0.05 & 0.00 & 0.02 & 0.00003	& 0.10 & 0.00 & 0.05 & 0.00001	&	0.11 & 0.00 & 0.05 & 0.00006
- \\ 
-\end{tabular}
-\end{table}
-
-
-\textbf{Algoritmo RELIEF}
-
-\begin{table}[ht!]
-\begin{tabular}{ccccc|cccc|cccc}
-\centering
- & \multicolumn{4}{c}{\textit{Ionosphere}} & \multicolumn{4}{c}{\textit{Parkinson}} & \multicolumn{4}{c}{\textit{Spectf-Heart}} \\ \hline
-\textbf{Nº} & \textbf{Clas} & \textbf{Red} & \textbf{Agr} & \textbf{T} & \textbf{Clas} & \textbf{Red} & \textbf{Agr} & \textbf{T} & \textbf{Clas} & \textbf{Red} & \textbf{Agr} & \textbf{T} \\ \hline
-0&	 0.86 & 0.03 & 0.44 & 0.01278 & 	0.72 & 0.05 & 0.38 & 0.00627 & 		0.97 & 0.11 & 0.54 & 0.01284 \\ 
-1&	 0.79 & 0.03 & 0.41 & 0.01250 & 	0.82 & 0.00 & 0.41 & 0.00475 & 		0.91 & 0.00 & 0.46 & 0.01303 \\ 
-2&	 0.80 & 0.09 & 0.44 & 0.01248 & 	0.95 & 0.05 & 0.50 & 0.00474 & 		0.74 & 0.00 & 0.37 & 0.01291 \\ 
-3&	 0.91 & 0.03 & 0.47 & 0.01277 & 	0.69 & 0.05 & 0.37 & 0.00474 & 		0.74 & 0.00 & 0.37 & 0.01297 \\ 
-4&	 0.86 & 0.03 & 0.44 & 0.01278 & 	0.67 & 0.00 & 0.33 & 0.00476 & 		0.99 & 0.09 & 0.54 & 0.01274 \\ 
-\hline
-Media&	 0.84 & 0.04 & 0.44 & 0.01266	& 0.77 & 0.03 & 0.40 & 0.00505		&0.87 & 0.04 & 0.46 & 0.01290
- \\ Std&	 0.05 & 0.02 & 0.02 & 0.00014	&0.10 & 0.02 & 0.06 & 0.00061	&	0.11 & 0.05 & 0.08 & 0.00010
+Media&	 0.88 & 0.94 & 0.91 & 22.31425 &	0.74 & 1.00 & 0.87 & 14.09645 &		0.87 & 0.86 & 0.86 & 22.36760
+ \\ Std&	 0.08 & 0.03 & 0.04 & 0.67254 &	0.06 & 0.00 & 0.03 & 0.30468	&	0.08 & 0.04 & 0.04 & 0.86021
  \\
-
 \end{tabular}
 \end{table}
 
-\textbf{Algoritmo de búsqueda local}
+\textbf{Algoritmo Big Bang - Big Crunch + Búsqueda Local}
 
 \begin{table}[ht!]
 \begin{tabular}{ccccc|cccc|cccc}
 \centering
  & \multicolumn{4}{c}{\textit{Ionosphere}} & \multicolumn{4}{c}{\textit{Parkinson}} & \multicolumn{4}{c}{\textit{Spectf-Heart}} \\ \hline
 \textbf{Nº} & \textbf{Clas} & \textbf{Red} & \textbf{Agr} & \textbf{T} & \textbf{Clas} & \textbf{Red} & \textbf{Agr} & \textbf{T} & \textbf{Clas} & \textbf{Red} & \textbf{Agr} & \textbf{T} \\ \hline
-
-0&	 0.89 & 0.79 & 0.84 & 2.47617 & 	0.77 & 0.68 & 0.73 & 0.54792 & 		0.97 & 0.84 & 0.91 & 3.52364 \\ 
-1&	 0.87 & 0.85 & 0.86 & 2.03225 & 	0.85 & 1.00 & 0.92 & 1.16207 & 		0.89 & 0.86 & 0.87 & 4.97461 \\ 
-2&	 0.86 & 0.76 & 0.81 & 1.77548 & 	0.87 & 0.82 & 0.84 & 0.81054 & 		0.74 & 0.91 & 0.83 & 3.02352 \\ 
-3&	 0.97 & 0.97 & 0.97 & 2.93292 & 	0.74 & 1.00 & 0.87 & 1.17324 & 		0.80 & 0.82 & 0.81 & 2.94800 \\ 
-4&	 0.86 & 0.88 & 0.87 & 1.89319 & 	0.62 & 0.91 & 0.76 & 0.53875 & 		0.99 & 0.68 & 0.83 & 3.57642 \\
-\hline 
-Media&	 0.89 & 0.85 & 0.87 & 2.22200	&0.77 & 0.88 & 0.83 & 0.84650	&	0.88 & 0.82 & 0.85 & 3.60924
- \\ Std&	 0.04 & 0.07 & 0.05 & 0.42744	&0.09 & 0.12 & 0.07 & 0.27982	&	0.09 & 0.08 & 0.04 & 0.72841
- \\  
-
-\end{tabular}
-\end{table}
-\pagebreak
-\textbf{BMB}
-
-\begin{table}[ht!]
-\begin{tabular}{ccccc|cccc|cccc}
-\centering
- & \multicolumn{4}{c}{\textit{Ionosphere}} & \multicolumn{4}{c}{\textit{Parkinson}} & \multicolumn{4}{c}{\textit{Spectf-Heart}} \\ \hline
-\textbf{Nº} & \textbf{Clas} & \textbf{Red} & \textbf{Agr} & \textbf{T} & \textbf{Clas} & \textbf{Red} & \textbf{Agr} & \textbf{T} & \textbf{Clas} & \textbf{Red} & \textbf{Agr} & \textbf{T} \\ \hline
-0&	 0.90 & 0.59 & 0.75 & 17.78729 & 	0.94 & 0.68 & 0.81 & 15.10886 & 		0.80 & 0.61 & 0.71 & 20.81741 \\ 
-1&	 0.91 & 0.65 & 0.78 & 18.16027 & 	0.91 & 0.68 & 0.80 & 12.36116 & 		0.86 & 0.55 & 0.70 & 20.59248 \\ 
-2&	 0.87 & 0.65 & 0.76 & 17.92551 & 	0.92 & 0.73 & 0.83 & 13.88676 & 		0.90 & 0.59 & 0.75 & 21.65683 \\ 
-3&	 0.90 & 0.59 & 0.74 & 18.16812 & 	0.94 & 0.73 & 0.83 & 12.77313 & 		0.85 & 0.61 & 0.73 & 18.05538 \\ 
-4&	 0.87 & 0.62 & 0.74 & 19.33893 & 	0.94 & 0.73 & 0.83 & 13.36502 & 		0.85 & 0.55 & 0.70 & 22.23772 \\
-\hline 
-Media&	 0.89 & 0.62 & 0.75 & 18.27602	& 0.93 & 0.71 & 0.82 & 13.49899	&	0.85 & 0.58 & 0.72 & 20.67197
- \\ Std&	 0.02 & 0.03 & 0.01 & 0.55073	&0.01 & 0.02 & 0.01 & 0.95724	&	0.03 & 0.03 & 0.02 & 1.43496
- \\ 
-\end{tabular}
-\end{table}
-
-\textbf{ES}
-
-\begin{table}[ht!]
-\begin{tabular}{ccccc|cccc|cccc}
-\centering
- & \multicolumn{4}{c}{\textit{Ionosphere}} & \multicolumn{4}{c}{\textit{Parkinson}} & \multicolumn{4}{c}{\textit{Spectf-Heart}} \\ \hline
-\textbf{Nº} & \textbf{Clas} & \textbf{Red} & \textbf{Agr} & \textbf{T} & \textbf{Clas} & \textbf{Red} & \textbf{Agr} & \textbf{T} & \textbf{Clas} & \textbf{Red} & \textbf{Agr} & \textbf{T} \\ \hline
-0&	 0.92 & 0.68 & 0.80 & 17.82474 & 	0.97 & 0.73 & 0.85 & 11.80979 & 		0.80 & 0.50 & 0.65 & 21.29503\\
-1&	 0.92 & 0.59 & 0.75 & 18.02119 & 	0.96 & 0.77 & 0.86 & 11.81669 & 		0.87 & 0.66 & 0.76 & 21.21374\\
-2&	 0.93 & 0.71 & 0.82 & 17.84429 & 	0.95 & 0.77 & 0.86 & 13.23995 & 		0.94 & 0.68 & 0.81 & 23.44971\\
-3&	 0.89 & 0.74 & 0.81 & 18.00936 & 	0.98 & 0.86 & 0.92 & 13.59249 & 		0.90 & 0.64 & 0.77 & 20.47733\\
-4&	 0.90 & 0.62 & 0.76 & 17.63211 & 	0.99 & 0.64 & 0.81 & 13.07948 & 		0.84 & 0.73 & 0.78 & 21.82140\\
+0&	 0.77 & 0.91 & 0.84 & 24.60504 & 	0.74 & 1.00 & 0.87 & 14.72751 & 1.00 & 0.84 & 0.92 & 21.76347 \\ 
+1&	 0.83 & 1.00 & 0.91 & 22.65621 & 	0.85 & 1.00 & 0.92 & 14.56661 & 0.90 & 0.89 & 0.89 & 22.40183 \\ 
+2&	 0.89 & 0.94 & 0.91 & 22.60146 & 	1.00 & 1.00 & 1.00 & 15.42183 & 0.76 & 0.95 & 0.86 & 23.22098 \\ 
+3&	 0.99 & 1.00 & 0.99 & 22.02246 & 	0.72 & 1.00 & 0.86 & 14.05384 & 0.89 & 0.86 & 0.87 & 23.19769 \\ 
+4&	 0.94 & 0.97 & 0.96 & 21.90966 & 	0.67 & 1.00 & 0.83 & 14.01068 & 0.99 & 0.89 & 0.94 & 22.95220 \\ 
 \hline
-Media&	 0.91 & 0.66 & 0.79 & 17.86634&	0.97 & 0.75 & 0.86 & 12.70768&		0.87 & 0.64 & 0.76 & 21.65144
-\\Std&	 0.01 & 0.05 & 0.03 & 0.14249	&0.02 & 0.07 & 0.03 & 0.74893	&	0.05 & 0.08 & 0.06 & 0.99597
-\\
-\end{tabular}
-\end{table}
+Media&	 0.88 & 0.96 & 0.92 & 22.75897 &	0.79 & 1.00 & 0.90 & 14.55609 &		0.91 & 0.89 & 0.90 & 22.70724
+ \\ Std&	 0.08 & 0.03 & 0.05 & 0.97027	& 0.12 & 0.00 & 0.06 & 0.51551	&	0.09 & 0.04 & 0.03 & 0.55650\\
 
-\textbf{ILS}
-
-\begin{table}[ht!]
-\begin{tabular}{ccccc|cccc|cccc}
-\centering
- & \multicolumn{4}{c}{\textit{Ionosphere}} & \multicolumn{4}{c}{\textit{Parkinson}} & \multicolumn{4}{c}{\textit{Spectf-Heart}} \\ \hline
-\textbf{Nº} & \textbf{Clas} & \textbf{Red} & \textbf{Agr} & \textbf{T} & \textbf{Clas} & \textbf{Red} & \textbf{Agr} & \textbf{T} & \textbf{Clas} & \textbf{Red} & \textbf{Agr} & \textbf{T} \\ \hline
-0&	 0.93 & 0.59 & 0.76 & 20.86034 & 	0.96 & 0.64 & 0.80 & 17.22413 & 		0.84 & 0.55 & 0.69 & 26.56079 \\ 
-1&	 0.90 & 0.65 & 0.77 & 20.88104 & 	0.90 & 0.68 & 0.79 & 17.03955 & 		0.86 & 0.61 & 0.74 & 24.52509 \\ 
-2&	 0.91 & 0.62 & 0.76 & 20.65761 & 	0.87 & 0.73 & 0.80 & 17.19522 & 		0.94 & 0.57 & 0.75 & 25.26890 \\ 
-3&	 0.88 & 0.62 & 0.75 & 20.91860 & 	0.93 & 0.73 & 0.83 & 15.30046 & 		0.89 & 0.55 & 0.72 & 22.21060 \\ 
-4&	 0.89 & 0.68 & 0.78 & 20.43069 & 	0.95 & 0.73 & 0.84 & 16.04657 & 		0.77 & 0.66 & 0.71 & 23.19795 \\
-\hline 
-Media&	 0.90 & 0.63 & 0.76 & 20.74966	&0.92 & 0.70 & 0.81 & 16.56119	&	0.86 & 0.59 & 0.72 & 24.35267
- \\ Std&	 0.02 & 0.03 & 0.01 & 0.18345	&0.03 & 0.04 & 0.02 & 0.76480	&	0.06 & 0.04 & 0.02 & 1.52753
- \\ 
 \end{tabular}
 \end{table}
 
 \pagebreak
-\textbf{ILS - ES}
-
-\begin{table}[ht!]
-\begin{tabular}{ccccc|cccc|cccc}
-\centering
- & \multicolumn{4}{c}{\textit{Ionosphere}} & \multicolumn{4}{c}{\textit{Parkinson}} & \multicolumn{4}{c}{\textit{Spectf-Heart}} \\ \hline
-\textbf{Nº} & \textbf{Clas} & \textbf{Red} & \textbf{Agr} & \textbf{T} & \textbf{Clas} & \textbf{Red} & \textbf{Agr} & \textbf{T} & \textbf{Clas} & \textbf{Red} & \textbf{Agr} & \textbf{T} \\ \hline
-0&	 0.93 & 0.94 & 0.93 & 20.62278 & 	0.95 & 0.91 & 0.93 & 17.61132 & 		0.84 & 0.73 & 0.78 & 24.29962 \\ 
-1&	 0.94 & 0.91 & 0.92 & 20.76749 & 	0.99 & 1.00 & 0.99 & 14.09746 & 		0.91 & 0.80 & 0.85 & 22.94477 \\ 
-2&	 0.94 & 0.85 & 0.90 & 20.79059 & 	0.98 & 0.95 & 0.97 & 15.76394 & 		0.94 & 0.86 & 0.90 & 26.37363 \\ 
-3&	 0.91 & 0.85 & 0.88 & 20.64561 & 	0.99 & 0.91 & 0.95 & 16.24410 & 		0.90 & 0.80 & 0.85 & 21.78090 \\ 
-4&	 0.90 & 0.85 & 0.87 & 20.28353 & 	0.97 & 0.91 & 0.94 & 15.62938 & 		0.86 & 0.75 & 0.81 & 21.34640 \\ 
-\hline
-Media&	 0.92 & 0.88 & 0.90 & 20.62200&	0.98 & 0.94 & 0.96 & 15.86924	&	0.89 & 0.79 & 0.84 & 23.34907
- \\ Std&	 0.02 & 0.04 & 0.02 & 0.18150	&0.01 & 0.04 & 0.02 & 1.12988	&	0.04 & 0.05 & 0.04 & 1.82673
- \\ 
-\end{tabular}
-\end{table}
-
 \subsection{Resumen Global - Tabla de Medias}
-
 \begin{table}[h]
 \begin{tabular}{ccccc|cccc|cccc}
 \centering
  & \multicolumn{4}{c}{\textit{Ionosphere}} & \multicolumn{4}{c}{\textit{Parkinson}} & \multicolumn{4}{c}{\textit{Spectf-Heart}} \\ \hline
 \textbf{Alg} & \textbf{Clas} & \textbf{Red} & \textbf{Agr} & \textbf{T} & \textbf{Clas} & \textbf{Red} & \textbf{Agr} & \textbf{T} & \textbf{Clas} & \textbf{Red} & \textbf{Agr} & \textbf{T} \\ \hline
-1-NN &	0.84 & 0.00 & 0.42 & 0.00280	& 0.78 & 0.00 & 0.39 & 0.00100	& 0.87 & 0.00 & 0.43 & 0.00314 \\
-RELIEF &  0.84 & 0.04 & 0.44 & 0.02056 & 	0.77 & 0.03 & 0.40 & 0.00487 & 0.87 & 0.04 & 0.46 & 0.01494\\
 BL & 0.89 & 0.85 & 0.87 & 2.22200	&0.77 & 0.88 & 0.83 & 0.84650	&	0.88 & 0.82 & 0.85 & 3.60924\\
 AGG-BLX & 0.89 & 0.62 & 0.75 & 18.27602	& 0.93 & 0.71 & 0.82 & 13.49899	&	0.85 & 0.58 & 0.72 & 20.67197 \\
 AGG-AC & 0.91 & 0.66 & 0.79 & 17.86634&	0.97 & 0.75 & 0.86 & 12.70768&		0.87 & 0.64 & 0.76 & 21.65144 \\ 
@@ -967,8 +817,12 @@ AGE-AC & 0.92 & 0.88 & 0.90 & 20.62200&	0.98 & 0.94 & 0.96 & 15.86924	&	0.89 & 0
 AM1 & 0.92 & 0.84 & 0.88 & 19.39848	&0.95 & 0.90 & 0.92 & 14.27740	&	0.88 & 0.80 & 0.84 & 21.06626 \\
 AM2 & 0.90 & 0.71 & 0.80 & 19.68916	&0.94 & 0.72 & 0.83 & 12.72460	&	0.86 & 0.68 & 0.77 & 20.27860 \\
 AM3 & 0.91 & 0.77 & 0.84 & 22.03035	&0.95 & 0.83 & 0.89 & 13.35908	&	0.88 & 0.73 & 0.80 & 20.43009 \\
+\hline
+BB-BC & 0.88 & 0.94 & 0.91 & 22.31425 &	0.74 & 1.00 & 0.87 & 14.09645 &		0.87 & 0.86 & 0.86 & 22.36760\\
+BB-BC + LS & 0.88 & 0.96 & 0.92 & 22.75897 &	0.79 & 1.00 & 0.90 & 14.55609 &		0.91 & 0.89 & 0.90 & 22.70724
 \end{tabular}
 \end{table}
+
 
 \subsection{Análisis de los resultados}
 
@@ -979,11 +833,7 @@ En esta sección realizaremos un extenso análisis a cerca de los resultados obt
 \end{tcolorbox}
 
 \subsubsection{Tiempo de ejecución}
-\subsubsection{Tasa de Clasificación}
-\subsubsection{Tasa de Reducción}
-\subsubsection{Función Objetivo}
-\subsubsection{Análisis de convergencia}
 
-  
+
 
 \end{document}

@@ -768,7 +768,7 @@ La ILS está basada en la aplicación repetida de la Búsqueda Local a una soluc
 
 \State \hspace{1cm}weigths $\gets$ mute(weights, index, 0.4)
 \State \hspace{0.5cm}\emph{endloop}
-\State \hspace{0.5cm}weights $\gets$ aplicamos búsqueda local
+\State \hspace{0.5cm}weights $\gets$ aplicamos búsqueda local para 15000 / 15 evaluaciones máximas
 \State \hspace{0.5cm}currentF $\gets$ f(weights)
 
 \State \hspace{0.5cm}\textbf{if} currentF > bestF  \textbf{then}
@@ -783,9 +783,44 @@ La ILS está basada en la aplicación repetida de la Búsqueda Local a una soluc
 \end{algorithmic}
 \end{algorithm}
 
+\pagebreak
 \subsection{Híbrido ILS - ES}
 
-\pagebreak
+Basicamente se repite el mismo pseudocodigo pero cambiando la localSearch por el enfriamiento simulado. 
+
+\begin{algorithm}
+\caption{ILS}\label{euclid}
+\begin{algorithmic}[1]
+\Procedure{ILS}{data,classes, trainIndex, testIndex}
+\State weights $\gets$ generamos la solución inicial
+\State bestF, currentF $\gets$ f(weights)
+\State best\_weigths $\gets$ weights.copy()
+\State mutations $\gets$ range(0.1 * nº features)
+\State
+\BState \textbf{\emph{for i in}}
+(range(15)):
+\State \hspace{0.5cm}\emph{for} i in mutations
+
+\State \hspace{1cm}index $\gets$ índice característica aleatoria
+
+\State \hspace{1cm}weigths $\gets$ mute(weights, index, 0.4)
+\State \hspace{0.5cm}\emph{endloop}
+\State \hspace{0.5cm}weights $\gets$ aplicamos el enfriamiento simulado para 15000 / 15 evaluaciones máximas
+\State \hspace{0.5cm}currentF $\gets$ f(weights)
+
+\State \hspace{0.5cm}\textbf{if} currentF > bestF  \textbf{then}
+\State \hspace{1cm}bestF $\gets$ currentF
+\State \hspace{1cm}best\_weights $\gets$ weights
+\State
+\State \hspace{0.5cm}weights $\gets$ best\_weights.copy()
+\BState \emph{endloop}
+\State Entrenamos el modelo, predecimos y calculamos las tasas
+\State \textbf{return} tasa clasificación, tasa reducción
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+\newpage
 \section{Procedimiento considerado para desarrollar la práctica}
 Para desarrollar la práctica, he usado \textbf{Python} como lenguaje de programación, sin usar ningún framework de metaheurísticas.
 
@@ -880,14 +915,14 @@ Media&	 0.89 & 0.85 & 0.87 & 2.22200	&0.77 & 0.88 & 0.83 & 0.84650	&	0.88 & 0.82
 \centering
  & \multicolumn{4}{c}{\textit{Ionosphere}} & \multicolumn{4}{c}{\textit{Parkinson}} & \multicolumn{4}{c}{\textit{Spectf-Heart}} \\ \hline
 \textbf{Nº} & \textbf{Clas} & \textbf{Red} & \textbf{Agr} & \textbf{T} & \textbf{Clas} & \textbf{Red} & \textbf{Agr} & \textbf{T} & \textbf{Clas} & \textbf{Red} & \textbf{Agr} & \textbf{T} \\ \hline
-0&	 0.90 & 0.59 & 0.75 & 17.78729 & 	0.94 & 0.68 & 0.81 & 15.10886 & 		0.80 & 0.61 & 0.71 & 20.81741 \\ 
-1&	 0.91 & 0.65 & 0.78 & 18.16027 & 	0.91 & 0.68 & 0.80 & 12.36116 & 		0.86 & 0.55 & 0.70 & 20.59248 \\ 
-2&	 0.87 & 0.65 & 0.76 & 17.92551 & 	0.92 & 0.73 & 0.83 & 13.88676 & 		0.90 & 0.59 & 0.75 & 21.65683 \\ 
-3&	 0.90 & 0.59 & 0.74 & 18.16812 & 	0.94 & 0.73 & 0.83 & 12.77313 & 		0.85 & 0.61 & 0.73 & 18.05538 \\ 
-4&	 0.87 & 0.62 & 0.74 & 19.33893 & 	0.94 & 0.73 & 0.83 & 13.36502 & 		0.85 & 0.55 & 0.70 & 22.23772 \\
-\hline 
-Media&	 0.89 & 0.62 & 0.75 & 18.27602	& 0.93 & 0.71 & 0.82 & 13.49899	&	0.85 & 0.58 & 0.72 & 20.67197
- \\ Std&	 0.02 & 0.03 & 0.01 & 0.55073	&0.01 & 0.02 & 0.01 & 0.95724	&	0.03 & 0.03 & 0.02 & 1.43496
+0&	 0.86 & 0.91 & 0.89 & 28.95681 & 	0.77 & 1.00 & 0.88 & 10.89507 & 0.94 & 0.86 & 0.90 & 23.11825 \\ 
+1&	 0.84 & 0.91 & 0.88 & 23.07019 & 	0.77 & 1.00 & 0.88 & 10.65365 & 0.91 & 0.89 & 0.90 & 19.02795 \\ 
+2&	 0.77 & 0.88 & 0.83 & 19.34851 & 	0.95 & 1.00 & 0.97 & 10.32327 & 0.73 & 0.95 & 0.84 & 18.88538 \\ 
+3&	 0.91 & 0.97 & 0.94 & 19.68961 & 	0.77 & 1.00 & 0.88 & 11.13045 & 0.80 & 0.86 & 0.83 & 19.26337 \\ 
+4&	 0.91 & 0.91 & 0.91 & 17.38932 & 	0.62 & 1.00 & 0.81 & 10.89773 & 0.96 & 0.84 & 0.90 & 19.06175 \\ 
+\hline
+Media&	 0.86 & 0.92 & 0.89 & 21.69089	& 0.77 & 1.00 & 0.89 & 10.78003	&	0.87 & 0.88 & 0.88 & 19.87134
+ \\ Std&	 0.05 & 0.03 & 0.04 & 4.06673&	0.11 & 0.00 & 0.05 & 0.27367	&	0.09 & 0.04 & 0.03 & 1.62794
  \\ 
 \end{tabular}
 \end{table}
@@ -899,15 +934,15 @@ Media&	 0.89 & 0.62 & 0.75 & 18.27602	& 0.93 & 0.71 & 0.82 & 13.49899	&	0.85 & 0
 \centering
  & \multicolumn{4}{c}{\textit{Ionosphere}} & \multicolumn{4}{c}{\textit{Parkinson}} & \multicolumn{4}{c}{\textit{Spectf-Heart}} \\ \hline
 \textbf{Nº} & \textbf{Clas} & \textbf{Red} & \textbf{Agr} & \textbf{T} & \textbf{Clas} & \textbf{Red} & \textbf{Agr} & \textbf{T} & \textbf{Clas} & \textbf{Red} & \textbf{Agr} & \textbf{T} \\ \hline
-0&	 0.92 & 0.68 & 0.80 & 17.82474 & 	0.97 & 0.73 & 0.85 & 11.80979 & 		0.80 & 0.50 & 0.65 & 21.29503\\
-1&	 0.92 & 0.59 & 0.75 & 18.02119 & 	0.96 & 0.77 & 0.86 & 11.81669 & 		0.87 & 0.66 & 0.76 & 21.21374\\
-2&	 0.93 & 0.71 & 0.82 & 17.84429 & 	0.95 & 0.77 & 0.86 & 13.23995 & 		0.94 & 0.68 & 0.81 & 23.44971\\
-3&	 0.89 & 0.74 & 0.81 & 18.00936 & 	0.98 & 0.86 & 0.92 & 13.59249 & 		0.90 & 0.64 & 0.77 & 20.47733\\
-4&	 0.90 & 0.62 & 0.76 & 17.63211 & 	0.99 & 0.64 & 0.81 & 13.07948 & 		0.84 & 0.73 & 0.78 & 21.82140\\
-\hline
-Media&	 0.91 & 0.66 & 0.79 & 17.86634&	0.97 & 0.75 & 0.86 & 12.70768&		0.87 & 0.64 & 0.76 & 21.65144
-\\Std&	 0.01 & 0.05 & 0.03 & 0.14249	&0.02 & 0.07 & 0.03 & 0.74893	&	0.05 & 0.08 & 0.06 & 0.99597
-\\
+0&	 0.92 & 0.94 & 0.93 & 5.56628 & 	0.74 & 0.95 & 0.85 & 2.19462 & 0.96 & 0.89 & 0.92 & 3.77431 \\ 
+1&	 0.86 & 0.97 & 0.91 & 4.60594 & 	0.82 & 0.95 & 0.89 & 2.13416 & 0.86 & 0.82 & 0.84 & 3.13027 \\ 
+2&	 0.81 & 0.94 & 0.88 & 3.79682 & 	0.87 & 0.95 & 0.91 & 2.08432 & 0.79 & 0.91 & 0.85 & 3.02167 \\ 
+3&	 0.89 & 0.97 & 0.93 & 3.13974 & 	0.67 & 0.95 & 0.81 & 2.05098 & 0.93 & 0.89 & 0.91 & 2.96716 \\ 
+4&	 0.91 & 0.97 & 0.94 & 3.11074 & 	0.67 & 0.95 & 0.81 & 1.87637 & 0.97 & 0.80 & 0.88 & 3.05440 \\
+\hline 
+Media&	 0.88 & 0.96 & 0.92 & 4.04391	& 0.75 & 0.95 & 0.85 & 2.06809	&	0.90 & 0.86 & 0.88 & 3.18956
+ \\ Std&	 0.04 & 0.01 & 0.02 & 0.93626&	0.08 & 0.00 & 0.04 & 0.10741	&	0.07 & 0.04 & 0.03 & 0.29711
+ \\
 \end{tabular}
 \end{table}
 
@@ -918,14 +953,14 @@ Media&	 0.91 & 0.66 & 0.79 & 17.86634&	0.97 & 0.75 & 0.86 & 12.70768&		0.87 & 0.
 \centering
  & \multicolumn{4}{c}{\textit{Ionosphere}} & \multicolumn{4}{c}{\textit{Parkinson}} & \multicolumn{4}{c}{\textit{Spectf-Heart}} \\ \hline
 \textbf{Nº} & \textbf{Clas} & \textbf{Red} & \textbf{Agr} & \textbf{T} & \textbf{Clas} & \textbf{Red} & \textbf{Agr} & \textbf{T} & \textbf{Clas} & \textbf{Red} & \textbf{Agr} & \textbf{T} \\ \hline
-0&	 0.93 & 0.59 & 0.76 & 20.86034 & 	0.96 & 0.64 & 0.80 & 17.22413 & 		0.84 & 0.55 & 0.69 & 26.56079 \\ 
-1&	 0.90 & 0.65 & 0.77 & 20.88104 & 	0.90 & 0.68 & 0.79 & 17.03955 & 		0.86 & 0.61 & 0.74 & 24.52509 \\ 
-2&	 0.91 & 0.62 & 0.76 & 20.65761 & 	0.87 & 0.73 & 0.80 & 17.19522 & 		0.94 & 0.57 & 0.75 & 25.26890 \\ 
-3&	 0.88 & 0.62 & 0.75 & 20.91860 & 	0.93 & 0.73 & 0.83 & 15.30046 & 		0.89 & 0.55 & 0.72 & 22.21060 \\ 
-4&	 0.89 & 0.68 & 0.78 & 20.43069 & 	0.95 & 0.73 & 0.84 & 16.04657 & 		0.77 & 0.66 & 0.71 & 23.19795 \\
+0&	 0.77 & 1.00 & 0.89 & 20.86955 & 	0.69 & 1.00 & 0.85 & 6.97767 & 0.99 & 0.91 & 0.95 & 19.04552 \\ 
+1&	 0.90 & 0.97 & 0.94 & 19.08801 & 	0.77 & 1.00 & 0.88 & 7.97694 & 0.91 & 0.86 & 0.89 & 19.17284 \\ 
+2&	 0.87 & 1.00 & 0.94 & 23.22469 & 	0.87 & 1.00 & 0.94 & 6.47391 & 0.73 & 0.93 & 0.83 & 18.66915 \\ 
+3&	 1.00 & 1.00 & 1.00 & 17.06149 & 	0.77 & 1.00 & 0.88 & 7.57291 & 0.83 & 0.98 & 0.90 & 19.20604 \\ 
+4&	 0.91 & 0.97 & 0.94 & 16.45233 & 	0.74 & 1.00 & 0.87 & 6.39850 & 0.97 & 0.93 & 0.95 & 19.32700 \\
 \hline 
-Media&	 0.90 & 0.63 & 0.76 & 20.74966	&0.92 & 0.70 & 0.81 & 16.56119	&	0.86 & 0.59 & 0.72 & 24.35267
- \\ Std&	 0.02 & 0.03 & 0.01 & 0.18345	&0.03 & 0.04 & 0.02 & 0.76480	&	0.06 & 0.04 & 0.02 & 1.52753
+Media&	 0.89 & 0.99 & 0.94 & 19.33922&	0.77 & 1.00 & 0.88 & 7.07999	&	0.89 & 0.92 & 0.90 & 19.08411
+ \\ Std&	 0.07 & 0.01 & 0.04 & 2.49095&	0.06 & 0.00 & 0.03 & 0.61477	&	0.10 & 0.04 & 0.04 & 0.22602
  \\ 
 \end{tabular}
 \end{table}
@@ -938,15 +973,13 @@ Media&	 0.90 & 0.63 & 0.76 & 20.74966	&0.92 & 0.70 & 0.81 & 16.56119	&	0.86 & 0.
 \centering
  & \multicolumn{4}{c}{\textit{Ionosphere}} & \multicolumn{4}{c}{\textit{Parkinson}} & \multicolumn{4}{c}{\textit{Spectf-Heart}} \\ \hline
 \textbf{Nº} & \textbf{Clas} & \textbf{Red} & \textbf{Agr} & \textbf{T} & \textbf{Clas} & \textbf{Red} & \textbf{Agr} & \textbf{T} & \textbf{Clas} & \textbf{Red} & \textbf{Agr} & \textbf{T} \\ \hline
-0&	 0.93 & 0.94 & 0.93 & 20.62278 & 	0.95 & 0.91 & 0.93 & 17.61132 & 		0.84 & 0.73 & 0.78 & 24.29962 \\ 
-1&	 0.94 & 0.91 & 0.92 & 20.76749 & 	0.99 & 1.00 & 0.99 & 14.09746 & 		0.91 & 0.80 & 0.85 & 22.94477 \\ 
-2&	 0.94 & 0.85 & 0.90 & 20.79059 & 	0.98 & 0.95 & 0.97 & 15.76394 & 		0.94 & 0.86 & 0.90 & 26.37363 \\ 
-3&	 0.91 & 0.85 & 0.88 & 20.64561 & 	0.99 & 0.91 & 0.95 & 16.24410 & 		0.90 & 0.80 & 0.85 & 21.78090 \\ 
-4&	 0.90 & 0.85 & 0.87 & 20.28353 & 	0.97 & 0.91 & 0.94 & 15.62938 & 		0.86 & 0.75 & 0.81 & 21.34640 \\ 
+0&	 0.72 & 0.76 & 0.74 & 3.76587 & 	0.82 & 0.91 & 0.86 & 2.03265 & 0.96 & 0.70 & 0.83 & 2.29400 \\ 
+1&	 0.89 & 0.88 & 0.88 & 2.57248 & 	0.82 & 0.95 & 0.89 & 2.06782 & 0.87 & 0.68 & 0.78 & 2.30661 \\ 
+2&	 0.87 & 0.74 & 0.80 & 3.11919 & 	0.92 & 0.86 & 0.89 & 2.03176 & 0.80 & 0.77 & 0.79 & 2.10852 \\ 
+3&	 0.91 & 0.76 & 0.84 & 2.64675 & 	0.82 & 1.00 & 0.91 & 2.10896 & 0.91 & 0.66 & 0.79 & 2.09741 \\ 
+4&	 0.93 & 0.85 & 0.89 & 2.75514 & 	0.72 & 0.86 & 0.79 & 1.87049 & 0.99 & 0.73 & 0.86 & 2.52641 \\ 
 \hline
-Media&	 0.92 & 0.88 & 0.90 & 20.62200&	0.98 & 0.94 & 0.96 & 15.86924	&	0.89 & 0.79 & 0.84 & 23.34907
- \\ Std&	 0.02 & 0.04 & 0.02 & 0.18150	&0.01 & 0.04 & 0.02 & 1.12988	&	0.04 & 0.05 & 0.04 & 1.82673
- \\ 
+Media&	 0.86 & 0.80 & 0.83 & 2.97189	&0.82 & 0.92 & 0.87 & 2.02234	&	0.91 & 0.71 & 0.81 & 2.26659
 \end{tabular}
 \end{table}
 
@@ -959,14 +992,12 @@ Media&	 0.92 & 0.88 & 0.90 & 20.62200&	0.98 & 0.94 & 0.96 & 15.86924	&	0.89 & 0.
 \textbf{Alg} & \textbf{Clas} & \textbf{Red} & \textbf{Agr} & \textbf{T} & \textbf{Clas} & \textbf{Red} & \textbf{Agr} & \textbf{T} & \textbf{Clas} & \textbf{Red} & \textbf{Agr} & \textbf{T} \\ \hline
 1-NN &	0.84 & 0.00 & 0.42 & 0.00280	& 0.78 & 0.00 & 0.39 & 0.00100	& 0.87 & 0.00 & 0.43 & 0.00314 \\
 RELIEF &  0.84 & 0.04 & 0.44 & 0.02056 & 	0.77 & 0.03 & 0.40 & 0.00487 & 0.87 & 0.04 & 0.46 & 0.01494\\
+\hline
 BL & 0.89 & 0.85 & 0.87 & 2.22200	&0.77 & 0.88 & 0.83 & 0.84650	&	0.88 & 0.82 & 0.85 & 3.60924\\
-AGG-BLX & 0.89 & 0.62 & 0.75 & 18.27602	& 0.93 & 0.71 & 0.82 & 13.49899	&	0.85 & 0.58 & 0.72 & 20.67197 \\
-AGG-AC & 0.91 & 0.66 & 0.79 & 17.86634&	0.97 & 0.75 & 0.86 & 12.70768&		0.87 & 0.64 & 0.76 & 21.65144 \\ 
-AGE-BLX & 0.90 & 0.63 & 0.76 & 20.74966	&0.92 & 0.70 & 0.81 & 16.56119	&	0.86 & 0.59 & 0.72 & 24.35267 \\
-AGE-AC & 0.92 & 0.88 & 0.90 & 20.62200&	0.98 & 0.94 & 0.96 & 15.86924	&	0.89 & 0.79 & 0.84 & 23.34907 \\
-AM1 & 0.92 & 0.84 & 0.88 & 19.39848	&0.95 & 0.90 & 0.92 & 14.27740	&	0.88 & 0.80 & 0.84 & 21.06626 \\
-AM2 & 0.90 & 0.71 & 0.80 & 19.68916	&0.94 & 0.72 & 0.83 & 12.72460	&	0.86 & 0.68 & 0.77 & 20.27860 \\
-AM3 & 0.91 & 0.77 & 0.84 & 22.03035	&0.95 & 0.83 & 0.89 & 13.35908	&	0.88 & 0.73 & 0.80 & 20.43009 \\
+BMB & 0.86 & 0.92 & 0.89 & 21.69089	& 0.77 & 1.00 & 0.89 & 10.78003	&	0.87 & 0.88 & 0.88 & 19.87134\\
+ES & 0.88 & 0.96 & 0.92 & 4.04391	& 0.75 & 0.95 & 0.85 & 2.06809	&	0.90 & 0.86 & 0.88 & 3.18956\\
+ILS & 0.89 & 0.99 & 0.94 & 19.33922&	0.77 & 1.00 & 0.88 & 7.07999	&	0.89 & 0.92 & 0.90 & 19.08411\\
+ILS-ES & 0.86 & 0.80 & 0.83 & 2.97189	&0.82 & 0.92 & 0.87 & 2.02234	&	0.91 & 0.71 & 0.81 & 2.26659
 \end{tabular}
 \end{table}
 
@@ -979,11 +1010,80 @@ En esta sección realizaremos un extenso análisis a cerca de los resultados obt
 \end{tcolorbox}
 
 \subsubsection{Tiempo de ejecución}
+
+Tal y como podemos observar en el gráfico que incluyo a continuación, los tiempos de los algoritmos implementados en esta práctica no mejoran los de la búsqueda local.
+
+\pagebreak 
+\begin{figure}[htp]
+\centering
+\includegraphics[scale=0.50]{Imagenes/grafica_tiempos.png}
+\label{}
+\end{figure} Vamos por partes. En cuanto a los \textbf{algoritmos BMB y ILS} podemos observar como presentan un runtime muchísimo mayor al de la búsqueda local. Teniendo en cuenta que estos algoritmos se basan en la aplicación reiterada de la búsqueda local, de primeras puede resultar un poco extraño. Sin embargo, esto tiene sentido debido a que en el algoritmo de la búsqueda local no se llegan a realizar todas las evaluaciones de la función objetivo. 
+
+\begin{figure}[htp]
+\centering
+\includegraphics[scale=0.450]{Imagenes/LS_evaluaciones.png}
+\caption{Nº Evaluaciones que realiza la Búsqueda Local en cada Partición en Ionosphere}
+\label{}
+\end{figure}
+
+Se puede observar que la búsqueda local no llega a gastar ni un 50\% de las evaluaciones máximas totales de las que dispone. Por el contrario, hemos comprobado que para BMB, por regla general, la búsqueda local suele completar las 1000 evaluaciones correspondientes cada vez que se aplica. En el caso de ILS, hay veces en las que una ejecución de la búsqueda local no llega a esas 1000 evaluaciones. Sin embargo, suele rondar un valor muy cercano (no suele bajar de 500 evaluaciones mínimo). En caso de que se quiera comprobar esto último, basta ejecutar el archivo \textit{main.py} y comprobar las salidas por pantalla para los algoritmos de BMB y ILS. 
+
+Pasemos a hablar de los \textbf{algoritmos ES y ILS-ES}. Podemos observar como los tiempos que obtiene el enfriamiento simulado se asemejan más a los de la búsqueda local. Para los dos primeros datasets vemos que son un poco superiores. Sin embargo, para el dataset de spectf-heart obtiene un tiempo menor. Esto tiene su causa en el tiempo que tarda la LS para la 3ª partición. Se puede apreciar que su bloque asociado consume bastante más tiempo que el resto. Por último, vemos como el híbrido mejora un poco los tiempos del ES. Con todo, cabe destacar que ninguno de estos se termina de acercar suficiente al runtime que presenta la LS para el dataset de Parkinson. 
+
 \subsubsection{Tasa de Clasificación}
+
+Empezamos haciendo un análisis de la comparativa entre los datasets. Para ello observamos la siguiente gráfica. Podemos ver como por regla general, el dataset de Parkinson resulta ser el más complicado de clasificar. Esto puede concluirse debido a que para todos los algoritmos sobresale por debajo la caja roja, correspondiente a los valores obtenidos para este dataset. Así mismo, podemos ver como el dataset de Ionosphere obtiene los valores menos dispersos. 
+
+\begin{figure}[htp]
+\centering
+\includegraphics[scale=0.50]{Imagenes/clasificacion_graficas_datasets.png}
+\label{}
+\end{figure}
+
+Pasemos ahora a estudiar la comparativa entre algoritmos. Se puede apreciar que entre los algoritmos implementados en esta práctica, son o bien el algoritmo ILS o el híbrido, ILS - ES, los que obtienen mejores valores en general. 
+
+\begin{figure}[htp]
+\centering
+\includegraphics[scale=0.475]{Imagenes/clasificacion_graficas_algoritmos.png}
+\label{}
+\end{figure}
+
+Resulta llamativa, en Ionosphere, la diferencia existente entre el valor máximo obtenido por los algoritmos LS y ILS. Aquí, el algoritmo de basado en trayectorias múltiples, debido a su capacidad de explotación de soluciones, y la de salir de óptimos locales, ha sido capaz de encontrar una solución que predice de forma perfecta sobre una de las particiones del conjunto de datos. 
+
 \subsubsection{Tasa de Reducción}
+
+Entre los nuevos algoritmos, vemos como sigue predominando el dataset de Parkinson como el más sencillo para reducir el vector de pesos. Es el que obtiene el valor más alto, para cada uno de los algoritmos. Recordemos que era el dataset con menor número de características. En general, suele ser spectf-heart el dataset más complicado de reducir. 
+
+\begin{figure}[htp]
+\centering
+\includegraphics[scale=0.50]{Imagenes/reduccion_graficas.png}
+\label{}
+\end{figure}
+
+En cuanto a la comparativa entre algoritmos, vemos que los mejores valores promedio los obtienen los algoritmos con búsqueda multiarranque BMB y ILS. Podemos ver como la mayoría de los algoritmos mejoran al valor promedio obtenido por la búsqueda local. El único que no mejora dichos valores es el híbrido, el cual obtiene además valores bastante más bajos que el resto de algoritmos implementados en esta práctica. 
+
+\newpage
 \subsubsection{Función Objetivo}
+
+Por último, vamos a analizar los valores obtenidos para la función objetivo. En la siguiente gráfica tenemos los valores promedio para cada uno de los algoritmos. Podemos ver como los algoritmos BMB, ES y ILS han obtenido mejores valores que la búsqueda local, en todos y cada uno de los dataset. Por el contrario, el algoritmo híbrido solo ha conseguido superar a la búsqueda local en el dataset segundo, el de Parkinson. 
+
+\begin{figure}[htp]
+\centering
+\includegraphics[scale=0.450]{Imagenes/grafica_fobjetivo.png}
+\label{}
+\end{figure}
+
 \subsubsection{Análisis de convergencia}
 
-  
+En este último apartado vamos a estudiar como es la convergencia hacia la solución para algunos de los algoritmos implementados en esta práctica. En la siguiente gráfica tenemos la comparativa entre los algoritmos BMB y ILS.  
+
+\begin{figure}[htp]
+\centering
+\includegraphics[scale=0.50]{Imagenes/convergencias.png}
+\label{}
+\end{figure}
+
+En cuanto al algoritmo ILS, vemos como posee una convergencia más 
 
 \end{document}

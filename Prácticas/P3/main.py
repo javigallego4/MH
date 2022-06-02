@@ -156,26 +156,34 @@ def execution_results_P3(dataset, dataset_features, dataset_target):
     for trainIndex , testIndex in split_indexes:
         n = testIndex.shape[0]                
                 
+        print('BMB\n')
+
         start = time.time()
         dataset_BMB[i][0],dataset_BMB[i][1], convergence_BMB[i] = bmb(dataset_features,dataset_target,trainIndex,testIndex)
         dataset_BMB[i][2] = 0.5*(dataset_BMB[i][0] + dataset_BMB[i][1])
         dataset_BMB[i][3] = time.time()-start
-        
+
+        print('ES\n')
+
         start = time.time()
         dataset_ES[i][0],dataset_ES[i][1], convergence_ES[i] = simulated_annealing(dataset_features,dataset_target,trainIndex,testIndex)
         dataset_ES[i][2] = 0.5*(dataset_ES[i][0] + dataset_ES[i][1])
         dataset_ES[i][3] = time.time()-start
 
+        print('ILS\n')
+
         start = time.time()
         dataset_ILS[i][0],dataset_ILS[i][1], convergence_ILS[i] = ils(dataset_features,dataset_target,trainIndex,testIndex)
         dataset_ILS[i][2] = 0.5*(dataset_ILS[i][0] + dataset_ILS[i][1])
         dataset_ILS[i][3] = time.time()-start
-        
+
+        print('ILS-ES\n')
+
         start = time.time()
         dataset_hybrid[i][0],dataset_hybrid[i][1], convergence_HYBRID[i] = hybrid_ils_es(dataset_features,dataset_target,trainIndex,testIndex)
         dataset_hybrid[i][2] = 0.5*(dataset_hybrid[i][0] + dataset_hybrid[i][1])
-        dataset_hybrid[i][3] = time.time()-start        
-        
+        dataset_hybrid[i][3] = time.time()-start    
+
         i+=1
         print("Partition ",i)
     
@@ -292,18 +300,19 @@ heart_features, heart_target = load_arff(dataset_heart)
 ionosphere_features = MinMaxScaler().fit_transform(ionosphere_features)
 parkinson_features = MinMaxScaler().fit_transform(parkinson_features)
 heart_features = MinMaxScaler().fit_transform(heart_features)
-
-"Obtaining results for algorithms belonging to P3"
-profiler = py.Profiler(0.00001)
-profiler.start()
         
+
+
+
+# ionosphere_1nn, ionosphere_gr, ionosphere_ls = execution_results_P1(dataset_ionosphere, ionosphere_features, ionosphere_target)
+# ionosphere_1nn, ionosphere_gr, ionosphere_ls = execution_results_P1(dataset_parkinson, parkinson_features, parkinson_target)
+# ionosphere_1nn, ionosphere_gr, ionosphere_ls = execution_results_P1(dataset_heart, heart_features, heart_target)
+
+
+
 ionosphere_BMB, ionosphere_ES, ionosphere_ILS, ionosphere_HYBRID, \
 ionosphere_convergence_BMB, ionosphere_convergence_ES, ionosphere_convergence_ILS, \
 ionosphere_convergence_HYBRID = execution_results_P3(dataset_ionosphere, ionosphere_features, ionosphere_target)
-
-
-profiler.stop()
-profiler.print()
 
 parkinson_BMB, parkinson_ES, parkinson_ILS, parkinson_HYBRID, \
 parkinson_convergence_BMB, parkinson_convergence_ES, parkinson_convergence_ILS, \

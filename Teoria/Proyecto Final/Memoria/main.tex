@@ -581,11 +581,13 @@ Tal y como podemos ver, presenta pues una gran similitud con los algoritmos gen�
 \label{}
 \end{figure}
 
+\begin{tcolorbox}
 \textbf{Mencionar que como en los criterios de evaluación del proyecto se evalúa por separado la metaheurística y una mejora de esta añadiéndole Búsqueda Local o cualquier otra hibridación, vamos a obviar el PASO 4 para la primera parte. Este paso lo añadiremos para la mejora. }
+\end{tcolorbox}
 
 \subsubsection{Explicación de las partes del algoritmo}
 
-\textbf{Paso 1:} nuestro algoritmo comienza con la fase del Big Bang, donde generamos nuestras soluciones inciales. En esta primera generación, dichas soluciones se generarán de manera totalmente aleatorias. Por el contrario, para el resto de generaciones de soluciones iniciales, partiremos del conjunto de élite. Luego cada vez se generarán poblaciones mejores. 
+\textbf{Paso 1:} nuestro algoritmo comienza con la fase del Big Bang, donde generamos nuestras soluciones iniciales. En esta primera generación, dichas soluciones se generarán de manera totalmente aleatorias. Por el contrario, para el resto de generaciones de soluciones iniciales, partiremos del conjunto de élite. Luego cada vez se generarán poblaciones mejores. 
 
 \begin{itemize}
 \item \textbf{Conjunto de élite}: este es uno de los términos que mayor importancia cobra en el algoritmo. Este conjunto almacena aquellas soluciones que sean mejores. Esto, nos permite realizar una mayor explotación de las soluciones.  
@@ -605,7 +607,7 @@ C_i^{new} = C_c + \sigma
 
 donde $C_i^{new}$ es el vecino nuevo y $\sigma$ la desviación estándar de una distribución normal. 
 
-Para el cálculo de $\sigma$, $r$ es un nº aleatorio entre el 0 y 1. Así mismo, $\alpha$ es una tasa de reducción cuyo valor también estará comprendido en dicho intervalo. $C_{max} y C_{min}$ son los límites superior e inferior del conjunto de élite en un momento dado. Por último, $k$ es el nº máximo de evaluaciones. 
+Para el cálculo de $\sigma$, $r$ es un nº aleatorio entre el 0 y 1. Así mismo, $\alpha$ es una tasa de reducción cuyo valor también estará comprendido en dicho intervalo. $C_{max}$ y $C_{min}$ son los límites superior e inferior del conjunto de élite en un momento dado. Por último, $k$ es el nº máximo de evaluaciones. 
 
 En este paso es donde más adapto la metaheurística a nuestro problema. Como lo que queremos es modificar un vector de pesos, tenemos que darle otro sentido a la ecuación (1). Entonces, $\sigma$ significará para nosotros el porcentaje de pesos que vamos a mutar. De tal manera que, como mediante (2) se obtienen valores muy pequeños he procedido de la siguiente forma: 
 
@@ -623,7 +625,7 @@ Sabemos que al principio el conjunto de élite tendrá soluciones con valores de
 
 En nuestro caso, el centro de masas hara referencia a aquella solución que mayor masa tenga, o lo que es lo mismo, aquella solución que mejor valor tenga para nuestra función objetivo. 
 
-\textbf{Llegados a este punto es donde se aplicaría el paso 4 del algoritmo. Aplicaríamos una búsqueda local, con un determinado nº de evaluaciones máximas. Este paso solo se incluye en la hibridación con BL.}
+\textbf{Llegados a este punto, aquí es donde se aplicaría el paso 4 del algoritmo. Aplicaríamos una búsqueda local, con un determinado nº de evaluaciones máximas. Este paso solo se incluye en la hibridación con BL.}
 
 \textbf{Paso 5: } la siguiente tarea a realizar es la de actualizar el \textbf{elite pool}. Para ello, borramos el último elemento del array (nótese que dicho vector de Stellar Objects ha sido ordenado previamente de forma descendente, de mayor a menor, en función de los valores de las masas). Acto seguido, incluiríamos el nuevo centro de masa, y procederíamos a realizar una ordenación de nuevo. Así mismo, almacenaríamos los nuevos valores de $c_{max}$ y $c_{min}$. 
 
@@ -631,7 +633,7 @@ En nuestro caso, el centro de masas hara referencia a aquella solución que mayo
 
 \textbf{Paso 7: } una vez fuera, en caso de no cumplirse la condición de parada, volveríamos al PASO 1 del algoritmo, donde se generaría una nueva población inicial a partir del conjunto de élite actual resultante. Este proceso se repetirá hasta que se llegue al número de evaluaciones máximas permitidas, que es nuestro criterio de parada. 
 
-A continuación presentamos el pseudocódigo de una manera mucho más extensa y cercana al código. En primer lugar, incluyo el pseudocódigo de la función \textbf{neighbours}. Mediante este método generaamos todos los vecinos para cada solución de la población actual. Posteriormente, retornamos aquel vecino cuyo valor de masa sea el más alto. 
+A continuación presentamos el pseudocódigo de una manera mucho más extensa y cercana al código. En primer lugar, incluyo el pseudocódigo de la función \textbf{neighbours}. Mediante este método generamos todos los vecinos para cada solución de la población actual. Posteriormente, retornamos aquel vecino cuyo valor de masa sea el más alto. 
 
 \vspace{1cm}
 
@@ -639,11 +641,11 @@ A continuación presentamos el pseudocódigo de una manera mucho más extensa y 
 \caption{neighbours}\label{euclid}
 \begin{algorithmic}[1]
 \Procedure{neighbours}{st,data,classes, trainIndex, testIndex, cmax, cmin}
-
-\State \emph{for i in} range(NUM\_NEIGHBOURS): 
-\State \hspace{1cm}\emph{for i in} range(nº caracteristicas * m)
+\State $\sigma \gets$ max \{ 0.05, $C_{max} - C_{min}$ \}
+\State \emph{for} i in range(NUM\_NEIGHBOURS): 
+\State \hspace{1cm}\emph{for} j in range(nº caracteristicas * $\sigma$)
 \State \hspace{1.5cm} index $\gets$ nº aleatorio entre [0, nº características -1]
-\State \hspace{1.5cm}mute(st.w)
+\State \hspace{1.5cm} mutar(st.w, index)
 \State \hspace{1cm}new\_st $\gets$ StellarObject(data[trainIndex], classes[trainIndex], st.w)
 \State \hspace{1cm}neighbours.append(new\_st)
 
@@ -656,7 +658,13 @@ A continuación presentamos el pseudocódigo de una manera mucho más extensa y 
 
 \vspace{1cm}
 
-Ahora, vamos con el pseudocódigo de la función principal del algoritmo. Tal y como se comentó previamente, el paso 4 (incluir la búsqueda local no se incluye en esta versión inicial. Se incluirá en la hibridación explicada posteriormente. 
+Puesto que el pseudocódigo general es muy parecido para ambos algoritmos, explicaremos primero en qué consiste la hibridación y posteriormente incluiremos el pseudocódigo completo. 
+
+\subsection{Hibridación. Big bang - Big crunch + Local Search}
+
+Tal y como comentamos antes, para la hibridación añadiremos el \textbf{Paso 4} del algoritmo propiamente dicho. Es decir, aplicaremos una búsqueda local al centro de masas. 
+
+Puesto que no se especifica una búsqueda local concreta a aplicar, he decidido usar la que ya había implementado para la sección de prácicas. 
 
 \begin{algorithm}
 \caption{BBBC}\label{euclid}
@@ -693,6 +701,10 @@ it < MAX\_EVALUACIONES :
 \State \hspace{1cm}sort(new\_population)
 \State \hspace{1cm}centre\_mass $\gets$ new\_population[0]
 \State
+\State
+\State \hspace{1cm}\textbf{Paso 4. Solo Híbrido}: aplicamos la búsqueda local al centro de masas. 
+\State 
+\State
 \State \hspace{1cm}Actualizamos elite\_pool
 \State \hspace{1cm}sort(elite\_pool)
 \State \hspace{1cm}$c_{max}, c_{min} \gets$ elite\_pool[0].mass, elite\_pool[-1].mass
@@ -701,8 +713,9 @@ it < MAX\_EVALUACIONES :
 \State \textbf{\emph{end while}}
 
 \State 
-\State \textbf{if} it < MAX\_EVALUACIONES  \textbf{then}
+\State \textbf{if} it + (POPULATION\_SIZE - ELITE\_POOL\_SIZE) < MAX\_EVALUACIONES  \textbf{then}
 \State \hspace{0.5cm} population $\gets$ generamos nueva población a partir del elite\_pool
+\State \hspace{0.5cm} it += POPULATION\_SIZE - ELITE\_POOL\_SIZE
 
 \BState{end while}
 
@@ -711,26 +724,6 @@ it < MAX\_EVALUACIONES :
 \EndProcedure
 \end{algorithmic}
 \end{algorithm}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 \newpage
 \section{Procedimiento considerado para desarrollar el proyecto}
@@ -754,7 +747,7 @@ La lista de archivos que contiene la práctica son los siguientes:
 
 \item \textcolor{ugrColor}{\textbf{bbbc.py}: fichero con la metaheurística Big Bang - Big Crunch, y su híbrido.}
  
-	\item \textbf{graficas.ipynb}: notebook mediante el cual he generado las gráficas.  
+	\item \textcolor{ugrColor}{\textbf{graficas.ipynb}: notebook mediante el cual he generado las gráficas.}  
 	\item \textbf{Datasets}: carpeta en la que se encuentran los datasets almacenados.
 	\item \textbf{Archivos\_CSV}: carpeta con los archivos CSV necesarios para agilizar el proceso de creación de las gráficas.
 	
@@ -778,7 +771,6 @@ La lista de archivos que contiene la práctica son los siguientes:
 4&	 0.96 & 0.91 & 0.93 & 22.28493 & 	0.72 & 1.00 & 0.86 & 13.73606 & 0.97 & 0.84 & 0.91 & 22.39183 \\ 
 \hline
 Media&	 0.88 & 0.94 & 0.91 & 22.31425 &	0.74 & 1.00 & 0.87 & 14.09645 &		0.87 & 0.86 & 0.86 & 22.36760
- \\ Std&	 0.08 & 0.03 & 0.04 & 0.67254 &	0.06 & 0.00 & 0.03 & 0.30468	&	0.08 & 0.04 & 0.04 & 0.86021
  \\
 \end{tabular}
 \end{table}
@@ -797,12 +789,12 @@ Media&	 0.88 & 0.94 & 0.91 & 22.31425 &	0.74 & 1.00 & 0.87 & 14.09645 &		0.87 & 
 4&	 0.94 & 0.97 & 0.96 & 21.90966 & 	0.67 & 1.00 & 0.83 & 14.01068 & 0.99 & 0.89 & 0.94 & 22.95220 \\ 
 \hline
 Media&	 0.88 & 0.96 & 0.92 & 22.75897 &	0.79 & 1.00 & 0.90 & 14.55609 &		0.91 & 0.89 & 0.90 & 22.70724
- \\ Std&	 0.08 & 0.03 & 0.05 & 0.97027	& 0.12 & 0.00 & 0.06 & 0.51551	&	0.09 & 0.04 & 0.03 & 0.55650\\
+ \\
 
 \end{tabular}
 \end{table}
 
-\pagebreak
+
 \subsection{Resumen Global - Tabla de Medias}
 \begin{table}[h]
 \begin{tabular}{ccccc|cccc|cccc}
@@ -834,6 +826,86 @@ En esta sección realizaremos un extenso análisis a cerca de los resultados obt
 
 \subsubsection{Tiempo de ejecución}
 
+Empezamos la sección de análisis con el tiempo de ejecución de los algoritmos. En primer lugar, vamos a realizar una comparativa entre los distintos conjuntos de datos que tenemos. Como podemos observar, los resultados obtenidos para los algoritmos de BB-BC se asemejan con los de los demás algoritmos. \textbf{Parkinson} es el dataset que menor runtime presenta. Cabe destacar que es el dataset con menor número de características. En cuanto a los otros dos conjuntos de datos, vemos como los tiempos suelen ser algo más similares. 
+
+\begin{figure}[htp]
+\centering
+\includegraphics[scale=0.4750]{Imagenes/tiempos.png}
+\label{}
+\end{figure}
+
+En cuanto a la comparativa entre algoritmos, vemos como los nuevos algoritmos (Big bang - Big crunch, y su hibridación) son los que más tiempo consumen en general. Dicha diferencia se puede notar especialmente para los conjuntos de datos de \textbf{Ionosphere} y \textbf{Spectf - Heart}. En cuanto a Parkinson, ambos están parejos con los algoritmos genéticos. 
+
+Pasemos entonces a analizar el tiempo que necesitan para llevar a cabo la clasificación nuestro algoritmos. Hemos realizado un profiling del tiempo de ejecución total de los algoritmos nuevos, mediante la herramienta \textbf{pyinstrument}.Esta, nos enseña cuales son las partes del código que mayor runtime presentan. 
+
+\newpage
+\begin{figure}[htp]
+\centering
+\includegraphics[scale=0.25]{Imagenes/pyinstrument.png}
+\label{}
+\end{figure}
+
+Como podemos apreciar en la imagen incluida, la mayor parte del tiempo se nos va en el método \textbf{classification\_rate}, con el cuál obtenemos el valor de la tasa de clasificación obtenida para una solución durante el entrenamiento. Dicho cuello de botella es el mismo para el resto de los algoritmos al igual que se muestra en la siguiente imagen, la cual contiene el mismo tipo de profiling pero esta vez para los algoritmos genéticos. 
+
+\begin{figure}[htp]
+\centering
+\includegraphics[scale=0.25]{Imagenes/cuello_botella.png}
+\label{}
+\end{figure}
+
+\subsubsection{Tasa de Clasificación}
+
+A continuación pasamos a analizar los valores obtenidos para la clasificación. Esta sección la dividiremos en dos partes. En la primera, analizaremos los valores obtenidos haciendo una comparativa entre los conjuntos de datos. En la segunda, realizaremos la comparativa entre los diferentes algoritmos. 
+
+\pagebreak
+\begin{figure}[htp]
+\centering
+\includegraphics[scale=0.4750]{Imagenes/clasificacion_datasets.png}
+\label{}
+\end{figure}
+
+Vemos como para los nuevos algoritmos implementados la tendencia sigue siendo la misma. El dataset de \textbf{Parkinson} resulta ser el más complicado de clasificar. Puede observarse que sus cajas correspondientes, las rojas, siempre sobresalen por debajo. Esto puede deberse a que pese a poseer un menor nº de características, sus datos pueden estar más dispersos, dificultando la tarea de clasificación. Tanto para BB-BC, como su híbrido, en Ionosphere y Spectf-Heart se obtienen valores similares. Así mismo, presentan un rango parecido en cuanto a la dispersión de los resultados obtenidos (las cajas son prácticamente del mismo tamaño).
+
+\begin{figure}[htp]
+\centering
+\includegraphics[scale=0.4750]{Imagenes/clasificacion_algoritmos.png}
+\label{}
+\end{figure}
+
+En cuanto a la comparativa de algoritmos, podemos apreciar como la búsqueda local y la correspondiente explotación de las soluciones han tenido efecto. El híbrido es el que obtiene el máximo valor para una partición, de todos los algoritmos. Puede observarse a su vez, que suele ser uno de los algoritmos en los que valores obtenidos presentan una mayor desviación típica. 
+
+\newpage
+\subsubsection{Tasa de Reducción}
+
+Pasemos a analizar ahora como de capaz es el algoritmo de reducir los pesos. En la siguiente gráfica podemos apreciar como los algoritmos que hemos implementado para este proyecto son los que obtiene los mejores resultados. Entre ellos mismos, podemos apreciar como la búsqueda local no implica una diferencia significativa en los valores de esta tasa. Esto es porque dichos resultados son prácticamente idénticos. 
+
+\begin{figure}[htp]
+\centering
+\includegraphics[scale=0.45]{Imagenes/reduccion.png}
+\label{}
+\end{figure}
+
+\subsubsection{Función Objetivo}
+
+Ahora, estudiaremos la comparativa para la función objetivo, que es aquella cuyo valor buscamos maximizar. Podemos observar como los valores obtenidos por los algoritmos del Big Bang son de los mejores, a la par de la Local Search, aunque un poco por encima. Así mismo, vemos como superan por una amplia diferencia a los algoritmos genéticos y meméticos. Entre BB-BC y su híbrido, la diferencia es mínima. Sin embargo esta se decanta a favor del híbrido. Obtiene de media 2-3 puntos más que el BB-BC. Para comprobar dicho análisis de forma más efectiva ir al notebook .ipynb que adjunto en la entrega
+
+\begin{figure}[htp]
+\centering
+\includegraphics[scale=0.4750]{Imagenes/funcion_objetivo.png}
+\label{}
+\end{figure}
+
+\subsubsection{Análisis de la convergencia}
+
+Por último, vamos a analizar como ha sido la convergencia hacia la solución de los dos algoritmos. Para ello, nos hemos creado varios archivos CSV mediante el uso de la librería \textit{Pandas}, los cuales usamos en el notebook para hacer la gráfica. 
+
+\begin{figure}[htp]
+\centering
+\includegraphics[scale=0.4750]{Imagenes/convergencia.png}
+\label{}
+\end{figure}
+
+Como podemos observar en la gráfica el algoritmo BB - BC presenta una convergencia mucho más progresiva que el hibrído. Esto se debe a que en el híbrido cuando se aplica la búsqueda local al principio, se mejora mucho el valor objetivo. Podemos ver como de media el algoritmo sin búsqueda local necesita 10k evaluaciones para llegar al 0.9 de valor en la función objetivo. Por su parte, el híbrido requiere de la mitad aproximadamente. Sin embargo, podemos ver a su vez como el híbrido presenta largos períodos de estancamiento en la parte media / final de las evaluaciones. 
 
 
 \end{document}

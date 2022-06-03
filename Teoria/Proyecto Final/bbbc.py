@@ -40,19 +40,19 @@ def neighbours(st,data,classes, trainIndex, testIndex, cmax, cmin, convergence):
     neighbours = []
 
     # We calculate sigma value
-    r = random.uniform(0.0,1.0)
-    alpha = random.uniform(0.0,1.0)
-    sigma = (r * alpha * (cmax-cmin))/MAX_EVALUACIONES
+    # r = random.uniform(0.0,1.0)
+    # alpha = random.uniform(0.0,1.0)
+    # sigma = (r * alpha * (cmax-cmin))/MAX_EVALUACIONES
     # print('CMAX - CMIN: ', cmax-cmin)
     # sigma = scaleBetween(sigma*((10)**4), 0.05, 0.25)
     # print('SIGMA: ', sigma)
 
-    m = max([0.05, cmax-cmin])
+    sigma = max([0.05, cmax-cmin])
 
     # We generate NUM_NEIGHBOURS neighbours for Stellar Object st. 
     size = range(NUM_NEIGHBOURS)
     for i in size:
-        for j in range(int(len(st.w)*m)):
+        for j in range(int(len(st.w)*sigma)):
             weights = np.copy(st.w)
             index = random.randint(0,len(weights)-1)
             weights = mute(weights, index)            

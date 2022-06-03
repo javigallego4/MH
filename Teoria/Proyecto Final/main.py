@@ -414,12 +414,12 @@ def execute_BigBang(dataset, dataset_features, dataset_target):
         n = testIndex.shape[0]                
         
         start = time.time()
-        dataset_BBBC[i][0],dataset_BBBC[i][1], convergence_BBBC = BBBC(dataset_features,dataset_target,trainIndex,testIndex)
+        dataset_BBBC[i][0],dataset_BBBC[i][1], convergence_BBBC[i] = BBBC(dataset_features,dataset_target,trainIndex,testIndex)
         dataset_BBBC[i][2] = 0.5*(dataset_BBBC[i][0] + dataset_BBBC[i][1])
         dataset_BBBC[i][3] = time.time()-start
 
         start = time.time()
-        dataset_BBBC_LocalSearch[i][0],dataset_BBBC_LocalSearch[i][1], convergence_BBBC_LocalSearch = BBBC_LocalSearch(dataset_features,dataset_target,trainIndex,testIndex)
+        dataset_BBBC_LocalSearch[i][0],dataset_BBBC_LocalSearch[i][1], convergence_BBBC_LocalSearch[i] = BBBC_LocalSearch(dataset_features,dataset_target,trainIndex,testIndex)
         dataset_BBBC_LocalSearch[i][2] = 0.5*(dataset_BBBC_LocalSearch[i][0] + dataset_BBBC_LocalSearch[i][1])
         dataset_BBBC_LocalSearch[i][3] = time.time()-start
                 
@@ -454,5 +454,6 @@ convergencias = [ionosphere_BBBC_convergence_, ionosphere_BBBC_LocalSearch_conve
 nombres = ['ionosphere_BBBC_convergence', 'ionosphere_BBBC+LocalSearch_convergence']
 
 for i in range(len(convergencias)):
-    dataset = pd.DataFrame({'Agr': convergencias[i], 'Algoritmo':nombres[i].split(sep='_')[1]})
-    dataset.to_csv('Archivos_CSV/' + nombres[i])
+    for j in range(5):
+        dataset = pd.DataFrame({'Agr': convergencias[i][j], 'Algoritmo':nombres[i].split(sep='_')[1], 'Particion': j})
+        dataset.to_csv('Archivos_CSV/' + nombres[i] + "_" + str(j))    

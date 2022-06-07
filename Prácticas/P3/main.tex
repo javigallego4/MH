@@ -1001,6 +1001,7 @@ ILS-ES & 0.86 & 0.80 & 0.83 & 2.97189	&0.82 & 0.92 & 0.87 & 2.02234	&	0.91 & 0.7
 \end{tabular}
 \end{table}
 
+\newpage
 \subsection{Análisis de los resultados}
 
 En esta sección realizaremos un extenso análisis a cerca de los resultados obtenidos. Para ello analizaremos cada una de las tasas. Empezamos en primer lugar por el tiempo de ejecución. 
@@ -1013,7 +1014,6 @@ En esta sección realizaremos un extenso análisis a cerca de los resultados obt
 
 Tal y como podemos observar en el gráfico que incluyo a continuación, los tiempos de los algoritmos implementados en esta práctica no mejoran los de la búsqueda local.
 
-\pagebreak 
 \begin{figure}[htp]
 \centering
 \includegraphics[scale=0.50]{Imagenes/grafica_tiempos.png}
@@ -1022,26 +1022,35 @@ Tal y como podemos observar en el gráfico que incluyo a continuación, los tiem
 
 \begin{figure}[htp]
 \centering
-\includegraphics[scale=0.450]{Imagenes/LS_evaluaciones.png}
-\caption{Nº Evaluaciones que realiza la Búsqueda Local en cada Partición en Ionosphere}
+\includegraphics[scale=0.390]{Imagenes/LS_evaluaciones.png}
+
 \label{}
 \end{figure}
 
 Se puede observar que la búsqueda local no llega a gastar ni un 50\% de las evaluaciones máximas totales de las que dispone. Por el contrario, hemos comprobado que para BMB, por regla general, la búsqueda local suele completar las 1000 evaluaciones correspondientes cada vez que se aplica. En el caso de ILS, hay veces en las que una ejecución de la búsqueda local no llega a esas 1000 evaluaciones. Sin embargo, suele rondar un valor muy cercano (no suele bajar de 500 evaluaciones mínimo). En caso de que se quiera comprobar esto último, basta ejecutar el archivo \textit{main.py} y comprobar las salidas por pantalla para los algoritmos de BMB y ILS. 
 
-Pasemos a hablar de los \textbf{algoritmos ES y ILS-ES}. Podemos observar como los tiempos que obtiene el enfriamiento simulado se asemejan más a los de la búsqueda local. Para los dos primeros datasets vemos que son un poco superiores. Sin embargo, para el dataset de spectf-heart obtiene un tiempo menor. Esto tiene su causa en el tiempo que tarda la LS para la 3ª partición. Se puede apreciar que su bloque asociado consume bastante más tiempo que el resto. Por último, vemos como el híbrido mejora un poco los tiempos del ES. Con todo, cabe destacar que ninguno de estos se termina de acercar suficiente al runtime que presenta la LS para el dataset de Parkinson. 
+Pasemos a hablar de los \textbf{algoritmos ES y ILS-ES}. Podemos observar como los tiempos que obtiene el enfriamiento simulado se asemejan más a los de la búsqueda local. Para los dos primeros datasets vemos que son un poco superiores. Sin embargo, para el dataset de spectf-heart obtiene un tiempo menor. Esto tiene su explicación en que en ambos algoritmos no se llegan a completar las 15000 evaluaciones totales de las que se dispone. En el algoritmo de enfriamiento simulado, no se suelen superar las 3000 evaluaciones por ejecución. Por su parte, en el híbrido una aplicación del algoritmo ES con 1000 evaluaciones, tampoco llega a completar siquiera un 30-40\% de las evaluaciones disponibles. 
+
+De la práctica anterior sabemos que el cuello de botella es la función \textbf{classification\_rate} la cual nos proporciona el valor de la tasa de clasificación. Es evidente entonces, que aquellos algoritmos que más evaluaciones consiguen realizar, sean los que mayor tiempo de ejecución tengan. A continuación adjunto una imagen con el profiling realizado sobre los algoritmos implementados en esta práctica: 
+
+\begin{figure}[htp]
+\centering
+\includegraphics[scale=0.240]{Imagenes/pyinstrument.png}
+\label{}
+\end{figure}
 
 \subsubsection{Tasa de Clasificación}
 
 Empezamos haciendo un análisis de la comparativa entre los datasets. Para ello observamos la siguiente gráfica. Podemos ver como por regla general, el dataset de Parkinson resulta ser el más complicado de clasificar. Esto puede concluirse debido a que para todos los algoritmos sobresale por debajo la caja roja, correspondiente a los valores obtenidos para este dataset. Así mismo, podemos ver como el dataset de Ionosphere obtiene los valores menos dispersos. 
 
+\pagebreak
 \begin{figure}[htp]
 \centering
 \includegraphics[scale=0.50]{Imagenes/clasificacion_graficas_datasets.png}
 \label{}
 \end{figure}
 
-Pasemos ahora a estudiar la comparativa entre algoritmos. Se puede apreciar que entre los algoritmos implementados en esta práctica, son o bien el algoritmo ILS o el híbrido, ILS - ES, los que obtienen mejores valores en general. 
+Pasemos ahora a estudiar la comparativa entre algoritmos. Se puede apreciar que entre los algoritmos implementados en esta práctica, son o bien el algoritmo ILS o el híbrido, ILS - ES, los que obtienen el mejor valor, por partición, en general. 
 
 \begin{figure}[htp]
 \centering
@@ -1049,21 +1058,22 @@ Pasemos ahora a estudiar la comparativa entre algoritmos. Se puede apreciar que 
 \label{}
 \end{figure}
 
-Resulta llamativa, en Ionosphere, la diferencia existente entre el valor máximo obtenido por los algoritmos LS y ILS. Aquí, el algoritmo de basado en trayectorias múltiples, debido a su capacidad de explotación de soluciones, y la de salir de óptimos locales, ha sido capaz de encontrar una solución que predice de forma perfecta sobre una de las particiones del conjunto de datos. 
+Resulta llamativa, en Ionosphere, la diferencia existente entre el valor máximo obtenido por los algoritmos LS y ILS. Aquí, el algoritmo de basado en trayectorias múltiples, debido a su capacidad de explotación de soluciones, y la de salir de óptimos locales, ha sido capaz de encontrar una solución que predice de forma casi perfecta sobre una de las particiones del conjunto de datos. 
 
 \subsubsection{Tasa de Reducción}
 
 Entre los nuevos algoritmos, vemos como sigue predominando el dataset de Parkinson como el más sencillo para reducir el vector de pesos. Es el que obtiene el valor más alto, para cada uno de los algoritmos. Recordemos que era el dataset con menor número de características. En general, suele ser spectf-heart el dataset más complicado de reducir. 
-
+\pagebreak
 \begin{figure}[htp]
 \centering
 \includegraphics[scale=0.50]{Imagenes/reduccion_graficas.png}
 \label{}
 \end{figure}
 
-En cuanto a la comparativa entre algoritmos, vemos que los mejores valores promedio los obtienen los algoritmos con búsqueda multiarranque BMB y ILS. Podemos ver como la mayoría de los algoritmos mejoran al valor promedio obtenido por la búsqueda local. El único que no mejora dichos valores es el híbrido, el cual obtiene además valores bastante más bajos que el resto de algoritmos implementados en esta práctica. 
+En cuanto a la comparativa entre algoritmos, vemos que los mejores valores promedio los obtienen los algoritmos con búsqueda multiarranque BMB y ILS. Podemos ver como la mayoría de los algoritmos mejoran al valor promedio obtenido por la búsqueda local. \\\\\\\\
+MIRAR ESTO
+El único que no mejora dichos valores es el híbrido, el cual obtiene además valores bastante más bajos que el resto de algoritmos implementados en esta práctica. \\\\\\\\
 
-\newpage
 \subsubsection{Función Objetivo}
 
 Por último, vamos a analizar los valores obtenidos para la función objetivo. En la siguiente gráfica tenemos los valores promedio para cada uno de los algoritmos. Podemos ver como los algoritmos BMB, ES y ILS han obtenido mejores valores que la búsqueda local, en todos y cada uno de los dataset. Por el contrario, el algoritmo híbrido solo ha conseguido superar a la búsqueda local en el dataset segundo, el de Parkinson. 
@@ -1074,16 +1084,17 @@ Por último, vamos a analizar los valores obtenidos para la función objetivo. E
 \label{}
 \end{figure}
 
+\newpage
 \subsubsection{Análisis de convergencia}
 
-En este último apartado vamos a estudiar como es la convergencia hacia la solución para algunos de los algoritmos implementados en esta práctica. En la siguiente gráfica tenemos la comparativa entre los algoritmos BMB y ILS.  
+En este último apartado vamos a estudiar como es la convergencia hacia la solución para algunos de los algoritmos implementados en esta práctica. En la siguiente gráfica tenemos la comparativa entre los algoritmos BMB y ILS:   
 
 \begin{figure}[htp]
 \centering
-\includegraphics[scale=0.50]{Imagenes/convergencias.png}
+\includegraphics[scale=0.450]{Imagenes/convergencias.png}
 \label{}
 \end{figure}
 
-En cuanto al algoritmo ILS, vemos como posee una convergencia más 
+Como sabemos, la primera aplicación de la búsqueda local es sobre una solución inicial generada aleatoriamente para ambos algoritmos. Esto puede verse claramente al comienzo de las gráficas. Ambos algoritmos presentan un crecimiento progresivo bastante significativo, en las primeras 1000 evaluaciones. Sin embargo, es a partir de aquí donde se aprecian las diferencias. Vemos como la gráfica del BMB presenta largos períodos de estancamiento, mientras que la de ILS sigue creciendo progresivamente (aunque de manera más lenta). Es aquí donde se puede apreciar bien como \textbf{la explotación de una solución optimizada (obtenida por una aplicación anterior de la BL) surte efecto para el algoritmo ILS. }
 
 \end{document}

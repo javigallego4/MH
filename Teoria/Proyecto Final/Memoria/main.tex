@@ -907,5 +907,55 @@ Por último, vamos a analizar como ha sido la convergencia hacia la solución de
 
 Como podemos observar en la gráfica el algoritmo BB - BC presenta una convergencia mucho más progresiva que el hibrído. Esto se debe a que en el híbrido cuando se aplica la búsqueda local al principio, se mejora mucho el valor objetivo. Podemos ver como de media el algoritmo sin búsqueda local necesita 10k evaluaciones para llegar al 0.9 de valor en la función objetivo. Por su parte, el híbrido requiere de la mitad aproximadamente. Sin embargo, podemos ver a su vez como el híbrido presenta largos períodos de estancamiento en la parte media / final de las evaluaciones. 
 
+\newpage
+\section{Estudio Experimental}
+
+Antes de empezar con el estudio experimental, quiero comentar que los resultados vistos hasta ahora corresponden a la mejor de las variantes que vamos a ver a continuación. Debido a las similitudes entre algunos resultados, hemos priorizado los resultados del híbrido. Al fin y al cabo, es el algoritmo que mejor resultado obtiene. 
+
+\subsection{Tamano del conjunto de élite. Nº de vecinos}
+
+Procedemos a mostrar los resultados del análisis experimental llevado a cabo. Este, ha consistido en un \textbf{hyperparameter tuning} (ajuste de los parámetros). Los parámetros que hemos intentado ajustar han sido el tamaño del conjunto de élite, y el número de vecinos que se generan. Los diferentes tamaños considerados para el estudio han sido: 
+
+\begin{itemize}
+\item Tamaños del conjunto de élite: 5, 10
+\item Nº de vecinos generados: 3, 5, 6
+\end{itemize}
+
+A continuación, mostramos los resultados promedio obtenidos. Hemos dividido en dos tablas. En la primera tabla encontramos los resultados obtenidos para el BB-BC sin búsqueda local. En la segunda, los resultados obtenidos para la hibridación.
+
+\subsubsection{BB-BC Hyperparameter Tuning}
+\begin{table}[h]
+\begin{tabular}{ccccc|cccc|cccc}
+\centering
+ & \multicolumn{4}{c}{\textit{Ionosphere}} & \multicolumn{4}{c}{\textit{Parkinson}} & \multicolumn{4}{c}{\textit{Spectf-Heart}} \\ \hline
+\textbf{Alg} & \textbf{Clas} & \textbf{Red} & \textbf{Agr} & \textbf{T} & \textbf{Clas} & \textbf{Red} & \textbf{Agr} & \textbf{T} & \textbf{Clas} & \textbf{Red} & \textbf{Agr} & \textbf{T} \\
+\hline
+EP - 10. Vec - 5 & 0.88 & 0.94 & 0.91 & 22.31425 &	0.74 & 1.00 & 0.87 & 14.09645 &		0.87 & 0.86 & 0.86 & 22.36760\\
+EP - 5. Vec - 3 & 0.85 & 0.95 & 0.90 & 18.96379&	0.82 & 0.99 & 0.90 & 11.84648	&	0.88 & 0.90 & 0.89 & 20.18627 \\
+EP - 10. Vec - 6 & 0.89 & 0.95 & 0.92 & 18.73483	&0.77 & 1.00 & 0.88 & 12.33951	&	0.88 & 0.85 & 0.86 & 20.63002\\
+EP - 5. Vec - 5 & 0.88 & 0.95 & 0.91 & 17.88934&	0.78 & 1.00 & 0.89 & 11.44364	&	0.89 & 0.84 & 0.86 & 18.89408
+\end{tabular}
+\end{table}
+
+
+
+
+\subsubsection{BB-BC + Local Search Hyperparameter Tuning}
+\begin{table}[h]
+\begin{tabular}{ccccc|cccc|cccc}
+\centering
+ & \multicolumn{4}{c}{\textit{Ionosphere}} & \multicolumn{4}{c}{\textit{Parkinson}} & \multicolumn{4}{c}{\textit{Spectf-Heart}} \\ \hline
+\textbf{Alg} & \textbf{Clas} & \textbf{Red} & \textbf{Agr} & \textbf{T} & \textbf{Clas} & \textbf{Red} & \textbf{Agr} & \textbf{T} & \textbf{Clas} & \textbf{Red} & \textbf{Agr} & \textbf{T} \\
+\hline
+EP - 10. Vec - 5 & 0.88 & 0.96 & 0.92 & 22.75897 &	0.79 & 1.00 & 0.90 & 14.55609 &		0.91 & 0.89 & 0.90 & 22.70724\\
+EP - 5. Vec - 3 & 0.89 & 0.95 & 0.92 & 18.57567 &	0.76 & 1.00 & 0.88 & 11.87192	&	0.89 & 0.89 & 0.89 & 19.57296 \\
+EP- 10. Vec - 6 & 0.87 & 0.94 & 0.90 & 19.09527	&0.80 & 1.00 & 0.90 & 13.04603	&	0.87 & 0.87 & 0.87 & 20.70465\\
+EP - 5. Vec - 5 & 0.88 & 0.98 & 0.93 & 18.36273	&0.77 & 1.00 & 0.88 & 11.86581&		0.87 & 0.90 & 0.89 & 19.08534
+\end{tabular}
+\end{table}
+
+
+
+
 
 \end{document}

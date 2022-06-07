@@ -341,12 +341,12 @@ nombres = ['ionosphere_BMB', 'ionosphere_ES', 'ionosphere_ILS', 'ionosphere_HYBR
 'parkinson_BMB', 'parkinson_ES', 'parkinson_ILS', 'parkinson_HYBRID', \
 'heartspectf_BMB', 'heartspectf_ES', 'heartspectf_ILS', 'heartspectf_HYBRID']
 
-'Creating CSV files for making charts'
-print('Creando archivos .CSV')
-counter = 0
-for res in resultados:     
-    create_csv(np.array(res), counter)
-    counter += 1
+# 'Creating CSV files for making charts'
+# print('Creando archivos .CSV')
+# counter = 0
+# for res in resultados:     
+#     create_csv(np.array(res), counter)
+#     counter += 1
 
 convergencias = [ionosphere_convergence_BMB, ionosphere_convergence_ES, ionosphere_convergence_ILS, ionosphere_convergence_HYBRID]
 # parkinson_convergence_BMB, parkinson_convergence_ES, parkinson_convergence_ILS, parkinson_convergence_HYBRID, 
@@ -354,6 +354,11 @@ convergencias = [ionosphere_convergence_BMB, ionosphere_convergence_ES, ionosphe
 
 nombres = ['ionosphere_convergence_BMB', 'ionosphere_convergence_ES', 'ionosphere_convergence_ILS', 'ionosphere_convergence_HYBRID']
 
+# for i in range(len(convergencias)):
+#     dataset = pd.DataFrame({'Agr': convergencias[i], 'Algoritmo':nombres[i].split(sep='_')[2]})
+#     dataset.to_csv('Archivos_CSV/' + nombres[i])  
+
 for i in range(len(convergencias)):
-    dataset = pd.DataFrame({'Agr': convergencias[i], 'Algoritmo':nombres[i].split(sep='_')[2]})
-    dataset.to_csv('Archivos_CSV/' + nombres[i])    
+    for j in range(5):
+        dataset = pd.DataFrame({'Agr': convergencias[i][j], 'Algoritmo':nombres[i].split(sep='_')[1], 'Particion': j})
+        dataset.to_csv('Archivos_CSV/' + nombres[i] + "_" + str(j))  

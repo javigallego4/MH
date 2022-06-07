@@ -1,7 +1,7 @@
 from algorithms import *
 import cProfile, pstats, io
 
-np.random.seed(2022)
+np.random.seed(123456789)
 
 MAX_ITERATIONS = 15000
 
@@ -193,20 +193,24 @@ def ils(data,classes,trainIndex,testIndex):
     # We start by generating an initial random solution
     weights = np.random.uniform(0.0,1.0,data.shape[1])  
 
-    bestF = f(weights, data[trainIndex], classes[trainIndex])
+    # bestF = f(weights, data[trainIndex], classes[trainIndex])
 
-    # Array for convergence values. 
-    convergence = []
-    convergence.append(bestF)  
+    # Array for convergence values. We initialize it to [0] because of LocalSearch function declaration. 
+    # In order to keep appending values to this array. 
+    convergence = [0]
+    # convergence.append(bestF)  
 
     # We apply local search to initial solution
-    weights, convergence = localSearch(weights, data[trainIndex], classes[trainIndex], MAX_ITERATIONS / 15, convergence, bestF)
+    weights, convergence = localSearch(weights, data[trainIndex], classes[trainIndex], MAX_ITERATIONS / 15, convergence)
     bestF = f(weights, data[trainIndex], classes[trainIndex])
     best_weights = weights.copy()
+    
+    # We erase the first 0 value we appended at first. 
+    convergence = convergence[1:]
 
-    # Array for convergence values
-    convergence = []
-    convergence.append(bestF)
+    # # Array for convergence values
+    # convergence = []
+    # convergence.append(bestF)
 
     # Number of mutations to make
     mutations = range(round(0.1 * data.shape[1]))
@@ -261,6 +265,8 @@ def ils(data,classes,trainIndex,testIndex):
 def hybrid_ils_es(data,classes,trainIndex,testIndex):
     # We start by generating an initial random solution
     weights = np.random.uniform(0.0,1.0,data.shape[1])    
+
+    # convergence = [0]
 
     # We apply local search to initial solution
     weights = simulated_annealing(data, classes, trainIndex,testIndex, MAX_ITERATIONS / 15, weights)

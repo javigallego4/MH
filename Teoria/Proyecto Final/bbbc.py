@@ -19,10 +19,6 @@ class StellarObject:
         self.t_red = reduction_rate(self.w)                    
         self.mass = 0.5 * (self.t_class + self.t_red)
 
-def scaleBetween(value, max, min):
-  #return (maxAllowed - minAllowed) * (unscaledNum - min) / (max - min) + minAllowed
-  return (value - min) / (max-min)
-
 """Neighbours Generation.
 
     Returns:
@@ -196,7 +192,18 @@ def BBBC(data,classes,trainIndex,testIndex):
     return t_clas_ret, elite_pool[0].t_red, convergence
 
                                
+"""Big Bang - Big Crunch Hybrid algorithm.
 
+    Returns:
+        It returns both classification and reduction rate        
+
+    Parameters:
+    data          -- dataset features
+    classes       -- dataset targets
+    trainIndex
+    testIndex
+    
+    """
 def BBBC_LocalSearch(data,classes,trainIndex,testIndex): 
     convergence = []
     population = []

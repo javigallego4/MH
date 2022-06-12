@@ -333,13 +333,13 @@ print_out(ionosphere_ILS, parkinson_ILS, heart_spectf_ILS)
 print("\nResults for HYBRID ILS - ES")
 print_out(ionosphere_HYBRID, parkinson_HYBRID, heart_spectf_HYBRID)
 
-resultados = [ionosphere_BMB, ionosphere_ES, ionosphere_ILS, ionosphere_HYBRID, \
-parkinson_BMB, parkinson_ES, parkinson_ILS, parkinson_HYBRID, \
-heart_spectf_BMB, heart_spectf_ES, heart_spectf_ILS, heart_spectf_HYBRID]
+# resultados = [ionosphere_BMB, ionosphere_ES, ionosphere_ILS, ionosphere_HYBRID, \
+# parkinson_BMB, parkinson_ES, parkinson_ILS, parkinson_HYBRID, \
+# heart_spectf_BMB, heart_spectf_ES, heart_spectf_ILS, heart_spectf_HYBRID]
 
-nombres = ['ionosphere_BMB', 'ionosphere_ES', 'ionosphere_ILS', 'ionosphere_HYBRID', \
-'parkinson_BMB', 'parkinson_ES', 'parkinson_ILS', 'parkinson_HYBRID', \
-'heartspectf_BMB', 'heartspectf_ES', 'heartspectf_ILS', 'heartspectf_HYBRID']
+# nombres = ['ionosphere_BMB', 'ionosphere_ES', 'ionosphere_ILS', 'ionosphere_HYBRID', \
+# 'parkinson_BMB', 'parkinson_ES', 'parkinson_ILS', 'parkinson_HYBRID', \
+# 'heartspectf_BMB', 'heartspectf_ES', 'heartspectf_ILS', 'heartspectf_HYBRID']
 
 # 'Creating CSV files for making charts'
 # print('Creando archivos .CSV')
@@ -348,17 +348,17 @@ nombres = ['ionosphere_BMB', 'ionosphere_ES', 'ionosphere_ILS', 'ionosphere_HYBR
 #     create_csv(np.array(res), counter)
 #     counter += 1
 
-convergencias = [ionosphere_convergence_BMB, ionosphere_convergence_ES, ionosphere_convergence_ILS, ionosphere_convergence_HYBRID]
-# parkinson_convergence_BMB, parkinson_convergence_ES, parkinson_convergence_ILS, parkinson_convergence_HYBRID, 
-# heart_spectf_convergence_BMB, heart_spectf_convergence_ES, heart_spectf_convergence_ILS, heart_spectf_convergence_HYBRID]
+# convergencias = [ionosphere_convergence_BMB, ionosphere_convergence_ES, ionosphere_convergence_ILS, ionosphere_convergence_HYBRID]
+# # parkinson_convergence_BMB, parkinson_convergence_ES, parkinson_convergence_ILS, parkinson_convergence_HYBRID, 
+# # heart_spectf_convergence_BMB, heart_spectf_convergence_ES, heart_spectf_convergence_ILS, heart_spectf_convergence_HYBRID]
 
-nombres = ['ionosphere_convergence_BMB', 'ionosphere_convergence_ES', 'ionosphere_convergence_ILS', 'ionosphere_convergence_HYBRID']
+# nombres = ['ionosphere_convergence_BMB', 'ionosphere_convergence_ES', 'ionosphere_convergence_ILS', 'ionosphere_convergence_HYBRID']
+
+# # for i in range(len(convergencias)):
+# #     dataset = pd.DataFrame({'Agr': convergencias[i], 'Algoritmo':nombres[i].split(sep='_')[2]})
+# #     dataset.to_csv('Archivos_CSV/' + nombres[i])  
 
 # for i in range(len(convergencias)):
-#     dataset = pd.DataFrame({'Agr': convergencias[i], 'Algoritmo':nombres[i].split(sep='_')[2]})
-#     dataset.to_csv('Archivos_CSV/' + nombres[i])  
-
-for i in range(len(convergencias)):
-    for j in range(5):
-        dataset = pd.DataFrame({'Agr': convergencias[i][j], 'Algoritmo':nombres[i].split(sep='_')[1], 'Particion': j})
-        dataset.to_csv('Archivos_CSV/' + nombres[i] + "_" + str(j))  
+#     for j in range(5):
+#         dataset = pd.DataFrame({'Agr': convergencias[i][j], 'Algoritmo':nombres[i].split(sep='_')[1], 'Particion': j})
+#         dataset.to_csv('Archivos_CSV/' + nombres[i] + "_" + str(j))  

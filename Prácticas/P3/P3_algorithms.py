@@ -81,6 +81,7 @@ def bmb(data,classes,trainIndex,testIndex):
 
     """
 def simulated_annealing(data,classes,trainIndex,testIndex, max_iterations = MAX_ITERATIONS, weights = []): 
+    # Not ILS - ES hybrid call to this function
     if len(weights) == 0: 
         # We start by generating an initial random solution
         weights = np.random.uniform(0.0,1.0,data.shape[1])
@@ -120,10 +121,6 @@ def simulated_annealing(data,classes,trainIndex,testIndex, max_iterations = MAX_
     iters = 1
 
     # Outer loop
-    
-    # ¿¿ aqui quitar lo de curretnTemperature > final porque sino se sale mucho antes ??
-    #DUDAS: PARA EL OUTER LOOP QUE CONDICIONES  HACE FALTA METER. LA DEL Nº DE ENFRIAMIENTOS ES NECESARIA ?
-    # while num_successes > 0 and currentTemperature > finalTemperature and coolings < M: 
     while num_successes != 0 and iters <= max_iterations and currentTemperature > finalTemperature: 
         num_successes = 0
         neighbours = 0
@@ -193,12 +190,9 @@ def ils(data,classes,trainIndex,testIndex):
     # We start by generating an initial random solution
     weights = np.random.uniform(0.0,1.0,data.shape[1])  
 
-    # bestF = f(weights, data[trainIndex], classes[trainIndex])
-
     # Array for convergence values. We initialize it to [0] because of LocalSearch function declaration. 
     # In order to keep appending values to this array. 
     convergence = [0]
-    # convergence.append(bestF)  
 
     # We apply local search to initial solution
     weights, convergence = localSearch(weights, data[trainIndex], classes[trainIndex], MAX_ITERATIONS / 15, convergence)
@@ -207,10 +201,6 @@ def ils(data,classes,trainIndex,testIndex):
     
     # We erase the first 0 value we appended at first. 
     convergence = convergence[1:]
-
-    # # Array for convergence values
-    # convergence = []
-    # convergence.append(bestF)
 
     # Number of mutations to make
     mutations = range(round(0.1 * data.shape[1]))
@@ -233,7 +223,6 @@ def ils(data,classes,trainIndex,testIndex):
             best_weights = weights
 
         weights = best_weights.copy()
-        # convergence.append(bestF)
 
     trainD = np.copy(data[trainIndex])*best_weights
     trainC = np.copy(classes[trainIndex])
@@ -266,8 +255,6 @@ def hybrid_ils_es(data,classes,trainIndex,testIndex):
     # We start by generating an initial random solution
     weights = np.random.uniform(0.0,1.0,data.shape[1])    
 
-    # convergence = [0]
-
     # We apply local search to initial solution
     weights = simulated_annealing(data, classes, trainIndex,testIndex, MAX_ITERATIONS / 15, weights)
     bestF = f(weights, data[trainIndex], classes[trainIndex])
@@ -290,7 +277,6 @@ def hybrid_ils_es(data,classes,trainIndex,testIndex):
             weights = mute(weights, index, 0.4)
 
         # We apply local search to the current weights array
-        # weights = localSearch(weights, data[trainIndex], classes[trainIndex], MAX_ITERATIONS / 15)
         weights = simulated_annealing(data, classes, trainIndex,testIndex, MAX_ITERATIONS / 15, weights)
         currentF = f(weights, data[trainIndex], classes[trainIndex])
 

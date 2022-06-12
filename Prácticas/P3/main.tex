@@ -449,7 +449,7 @@ fonttitle=\bfseries, title=Enunciado~\thetcbcounter: #2,#1}
 \usepackage{titling}
 \include{titlepage}
 \usepackage{wallpaper}
-\date{12 de mayo 2022}
+\date{29 de mayo 2022}
 
 \usepackage{graphicx}
 \begin{document}
@@ -709,7 +709,7 @@ Finalmente el criterio de enfriamiento es Cauchy modificado donde tenemos que $T
 \State $T_current \gets T_0$
 \State
 \BState \textbf{\emph{while}}
-max\_successes > 0 and $T_{current} > T_F$ and coolings < M
+num\_successes != 0 and $T_{current} > T_F$ and iters $\geq$ max\_iterations
 \State neighbours, num\_successes $\gets$ 0
 
 \State \textbf{\emph{while}} num\_successes < max\_successes and negihbours < max\_neighbours
@@ -756,12 +756,13 @@ La ILS está basada en la aplicación repetida de la Búsqueda Local a una soluc
 \begin{algorithmic}[1]
 \Procedure{ILS}{data,classes, trainIndex, testIndex}
 \State weights $\gets$ generamos la solución inicial
-\State bestF, currentF $\gets$ f(weights)
+\State weights $\gets$ aplicamos búsqueda local para 15000 / 15 evaluaciones máximas
+\State bestF $\gets$ f(weights)
 \State best\_weigths $\gets$ weights.copy()
 \State mutations $\gets$ range(0.1 * nº features)
 \State
 \BState \textbf{\emph{for i in}}
-(range(15)):
+(range(14)):
 \State \hspace{0.5cm}\emph{for} i in mutations
 
 \State \hspace{1cm}index $\gets$ índice característica aleatoria
@@ -793,19 +794,20 @@ Basicamente se repite el mismo pseudocodigo pero cambiando la localSearch por el
 \begin{algorithmic}[1]
 \Procedure{ILS}{data,classes, trainIndex, testIndex}
 \State weights $\gets$ generamos la solución inicial
-\State bestF, currentF $\gets$ f(weights)
+\State weights $\gets$ aplicamos enfriamiento simulado para 15000 / 15 evaluaciones máximas
+\State bestF $\gets$ f(weights)
 \State best\_weigths $\gets$ weights.copy()
 \State mutations $\gets$ range(0.1 * nº features)
 \State
 \BState \textbf{\emph{for i in}}
-(range(15)):
+(range(14)):
 \State \hspace{0.5cm}\emph{for} i in mutations
 
 \State \hspace{1cm}index $\gets$ índice característica aleatoria
 
 \State \hspace{1cm}weigths $\gets$ mute(weights, index, 0.4)
 \State \hspace{0.5cm}\emph{endloop}
-\State \hspace{0.5cm}weights $\gets$ aplicamos el enfriamiento simulado para 15000 / 15 evaluaciones máximas
+\State \hspace{0.5cm}weights $\gets$ aplicamos enfriamiento simulado para 15000 / 15 evaluaciones máximas
 \State \hspace{0.5cm}currentF $\gets$ f(weights)
 
 \State \hspace{0.5cm}\textbf{if} currentF > bestF  \textbf{then}
@@ -1070,9 +1072,7 @@ Entre los nuevos algoritmos, vemos como sigue predominando el dataset de Parkins
 \label{}
 \end{figure}
 
-En cuanto a la comparativa entre algoritmos, vemos que los mejores valores promedio los obtienen los algoritmos con búsqueda multiarranque BMB y ILS. Podemos ver como la mayoría de los algoritmos mejoran al valor promedio obtenido por la búsqueda local. \\\\\\\\
-MIRAR ESTO
-El único que no mejora dichos valores es el híbrido, el cual obtiene además valores bastante más bajos que el resto de algoritmos implementados en esta práctica. \\\\\\\\
+En cuanto a la comparativa entre algoritmos, vemos que los mejores valores promedio los obtienen los algoritmos con búsqueda multiarranque BMB y ILS. Podemos ver como la mayoría de los algoritmos mejoran al valor promedio obtenido por la búsqueda local. 
 
 \subsubsection{Función Objetivo}
 
